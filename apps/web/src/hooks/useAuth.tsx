@@ -108,7 +108,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     id: u.id,
                     type: u.type,
                     count: u.count
-                }))
+                })),
+                x: p.city.x,
+                y: p.city.y
             } as any,
             resources: {
                 wood: p.wood,

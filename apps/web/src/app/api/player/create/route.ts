@@ -47,6 +47,39 @@ export async function POST(request: NextRequest) {
         // Create initial buildings data
         const initialBuildings = createInitialBuildings();
 
+        // Encuentra una isla con espacio disponible
+        let x = 0;
+        let y = 0;
+        let isFound = false;
+        let attempts = 0;
+
+        const GRID_COUNT = 20;
+        const CAPACITIES = { large: 8, medium: 5, mini: 3 };
+
+        while (!isFound && attempts < 50) {
+            x = Math.floor(Math.random() * 100);
+            y = Math.floor(Math.random() * 100);
+
+            const col = Math.floor(x / (100 / GRID_COUNT));
+            const row = Math.floor(y / (100 / GRID_COUNT));
+            const seed = row * GRID_COUNT + col;
+            const type = seed % 3 === 0 ? 'large' : seed % 2 === 0 ? 'medium' : 'mini';
+            const maxCapacity = CAPACITIES[type];
+
+            // Contar cuántos jugadores hay ya en esta "isla" (sector de 5x5)
+            const inhabitantCount = await prisma.city.count({
+                where: {
+                    x: { gte: col * 5, lt: (col + 1) * 5 },
+                    y: { gte: row * 5, lt: (row + 1) * 5 }
+                }
+            });
+
+            if (inhabitantCount < maxCapacity) {
+                isFound = true;
+            }
+            attempts++;
+        }
+
         // Create player with city and buildings
         const player = await prisma.player.create({
             data: {
@@ -60,8 +93,8 @@ export async function POST(request: NextRequest) {
                 city: {
                     create: {
                         name: cityName.trim(),
-                        x: Math.floor(Math.random() * 100),
-                        y: Math.floor(Math.random() * 100),
+                        x,
+                        y,
                         buildings: {
                             create: initialBuildings.map((b: BuildingState) => ({
                                 type: b.type,

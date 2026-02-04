@@ -1,54 +1,175 @@
 .worldWrapper {
     position: absolute;
     inset: 0;
-    background: #001220;
+    background: #000a12;
     overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    box-shadow: inset 0 0 150px 50px rgba(0, 0, 0, 0.9);
+}
+
+.grabbing {
+    cursor: grabbing;
+}
+
+.waterBase {
+    position: absolute;
+    inset: 0;
+    background-color: #001a2e;
+    z-index: 0;
+}
+
+.mapCanvas {
+    position: absolute;
+    transition: transform 0.05s linear;
+    will-change: transform;
+    z-index: 1;
+    background-image: url('/assets/islands/water.png');
+    background-repeat: repeat;
+}
+
+.mapCanvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/assets/islands/water.png');
+    background-repeat: repeat;
+    background-size: 2717px 2717px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: soft-light;
+}
+
+.fogOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 40%, rgba(0, 5, 15, 0.4) 100%);
+    box-shadow: inset 0 0 150px 50px rgba(0, 0, 0, 0.5);
+}
+
+.cityNode {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    /* Dejamos que los eventos pasen a las aldeas */
+}
+
+.islandContainer {
+    position: relative;
+    width: 350px;
+    height: 350px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.mapCanvas {
-    position: relative;
-    width: 2000px;
-    /* Large map area */
-    height: 2000px;
-    background-repeat: repeat;
-    transition: transform 0.3s ease;
+.islandImg {
+    width: 350px;
+    height: auto;
+    pointer-events: none;
 }
 
-.cityNode {
+/* SISTEMA DE ALDEAS */
+.villageNode {
     position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    z-index: 20;
+    pointer-events: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
-.cityNode:hover {
-    transform: translate(-50%, -50%) scale(1.1);
+.villageImg {
+    width: 40px;
+    /* Tamaño de la aldea */
+    height: auto;
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.8));
+    transition: all 0.2s ease;
+}
+
+.villageNode:hover .villageImg {
+    transform: scale(1.2);
+    filter: drop-shadow(0 8px 15px rgba(212, 175, 55, 0.6)) brightness(1.2);
+}
+
+.villageTooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(0, 10, 20, 0.95);
+    border: 1px solid #d4af37;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.villageNode:hover .villageTooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-15px) scale(1.1);
     z-index: 100;
 }
 
-.islandImg {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+.villageTag {
+    font-size: 0.65rem;
+    color: #ffd700;
+    font-weight: 800;
 }
 
-.cityNameLabel {
-    margin-top: -10px;
-    padding: 2px 8px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #e2e8f0;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    pointer-events: none;
+.villageName {
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.coordHud {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(0, 10, 20, 0.85);
+    color: #d4af37;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    z-index: 100;
+}
+
+.centerBtn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 10, 20, 0.9);
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.centerBtn:hover {
+    background: #d4af37;
+    color: #000;
+    transform: scale(1.1);
 }
 
 .loading {
@@ -57,31 +178,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #001220;
-    color: #ffd700;
+    background: #000a12;
+    color: #d4af37;
     font-size: 1.5rem;
-}
-
-.controls {
-    position: absolute;
-    bottom: 2rem;
-    right: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    z-index: 200;
-}
-
-.controls button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    font-size: 1.25rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

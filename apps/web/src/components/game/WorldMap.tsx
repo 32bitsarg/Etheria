@@ -23,6 +23,7 @@ interface WorldCity {
 
 interface WorldMapProps {
     playerCityCoords?: { x: number; y: number };
+    currentPlayerId?: string;
 }
 
 const MAP_SIZE = 10000;
@@ -49,7 +50,9 @@ function seededRandom(seed: number) {
     return x - Math.floor(x);
 }
 
-export function WorldMap({ playerCityCoords }: WorldMapProps) {
+import { RadialMenu } from './RadialMenu';
+
+export function WorldMap({ playerCityCoords, currentPlayerId }: WorldMapProps) {
     const [cities, setCities] = useState<WorldCity[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -59,6 +62,8 @@ export function WorldMap({ playerCityCoords }: WorldMapProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<HTMLDivElement>(null);
     const hasCentered = useRef(false);
+
+    const [selectedCity, setSelectedCity] = useState<{ city: WorldCity, pos: { x: number, y: number } } | null>(null);
 
     const isDragging = useRef(false);
     const startPos = useRef({ x: 0, y: 0 });
@@ -155,6 +160,7 @@ export function WorldMap({ playerCityCoords }: WorldMapProps) {
                 isDragging.current = true;
                 startPos.current = { x: e.clientX - offsetRef.current.x, y: e.clientY - offsetRef.current.y };
                 containerRef.current?.classList.add(styles.grabbing);
+                setSelectedCity(null); // Cerrar menú al empezar a arrastrar
             }}
             onMouseMove={(e) => {
                 if (!isDragging.current) return;
@@ -218,6 +224,20 @@ export function WorldMap({ playerCityCoords }: WorldMapProps) {
                                         style={{
                                             transform: `translate(-50%, -50%) translate(${slot.x}px, ${slot.y}px)`
                                         }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            // No mostrar menú si es nuestra propia aldea
+                                            if (city.player.userId === currentPlayerId) return;
+
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            setSelectedCity({
+                                                city,
+                                                pos: {
+                                                    x: rect.left + rect.width / 2,
+                                                    y: rect.top + rect.height / 2
+                                                }
+                                            });
+                                        }}
                                     >
                                         <div className={styles.villageTooltip}>
                                             {city.player.allianceMember && (
@@ -261,6 +281,17 @@ export function WorldMap({ playerCityCoords }: WorldMapProps) {
                     updateMapTransform();
                 }
             }}>🏠</button>
+            {selectedCity && (
+                <RadialMenu
+                    position={selectedCity.pos}
+                    onClose={() => setSelectedCity(null)}
+                    options={[
+                        { label: 'Atacar', icon: '⚔️', action: () => console.log('Atacar a', selectedCity.city.name) },
+                        { label: 'Espiar', icon: '🕵️', action: () => console.log('Espiar a', selectedCity.city.name) },
+                        { label: 'Comerciar', icon: '⚖️', action: () => console.log('Comerciar con', selectedCity.city.name) },
+                    ]}
+                />
+            )}
         </div>
     );
 }

@@ -26,6 +26,7 @@ import styles from './GameDashboard.module.css';
 export function GameDashboard() {
     const {
         player,
+        userId,
         updatePlayer,
         logout,
         upgradeBuilding,
@@ -236,7 +237,10 @@ export function GameDashboard() {
                         queue={player.city.constructionQueue}
                     />
                 ) : (
-                    <WorldMap playerCityCoords={{ x: (player.city as any).x || 0, y: (player.city as any).y || 0 }} />
+                    <WorldMap
+                        playerCityCoords={{ x: (player.city as any).x || 0, y: (player.city as any).y || 0 }}
+                        currentPlayerId={userId || undefined}
+                    />
                 )}
             </div>
 

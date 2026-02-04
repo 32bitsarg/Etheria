@@ -13,7 +13,7 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.0.5',
+    version: '0.0.6',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
@@ -32,6 +32,42 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.0.6',
+        date: '2026-02-04',
+        title: 'World Map & Navigation',
+        type: 'minor',
+        changes: [
+            {
+                category: 'feature',
+                description: 'Nuevo sistema de Mapamundi interactivo con 400 islas generadas por procedimiento.',
+            },
+            {
+                category: 'feature',
+                description: 'Sistema de Asentamientos Múltiples: Las islas ahora albergan hasta 8 aldeas de jugadores.',
+            },
+            {
+                category: 'ui',
+                description: 'Representación visual de aldeas sobre islas con etiquetas dinámicas de Alianza.',
+            },
+            {
+                category: 'ui',
+                description: 'Océano infinito con texturas de doble capa para eliminar costuras visuales.',
+            },
+            {
+                category: 'performance',
+                description: 'Optimización masiva (Culling): Solo se renderiza lo que ves, reduciendo el consumo de CPU/GPU.',
+            },
+            {
+                category: 'performance',
+                description: 'Navegación ultra fluida mediante bypass del ciclo de renderizado de React.',
+            },
+            {
+                category: 'balance',
+                description: 'Algoritmo de asignación de islas inteligente: Previene el hacinamiento de jugadores.',
+            },
+        ],
+    },
     {
         version: '0.0.5',
         date: '2026-02-04',

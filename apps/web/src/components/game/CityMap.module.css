@@ -1,0 +1,327 @@
+.mapWrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* =========================================
+   AMBIENT BACKGROUND
+   ========================================= */
+.ambientBg {
+    position: absolute;
+    inset: 0;
+    background-image: url('/assets/tilesets/villagebg.png');
+    /* Opciones para jugar con el tamaño:
+       - cover:    Cubre todo (hace zoom si es necesario).
+       - contain:  Se ve entera (puede dejar bordes).
+       - 80%:      80% del ancho del contenedor.
+       - 1000px:   Ancho fijo en píxeles (Control total del zoom).
+    */
+    background-size: 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    /* Slight overlay for UI readability */
+    filter: brightness(0.9);
+    /* Darken slightly to make buildings pop */
+}
+
+/* Tree decorations removed for image background */
+
+/* =========================================
+   BUILDINGS CONTAINER
+   ========================================= */
+/* =========================================
+   BUILDINGS CONTAINER
+   ========================================= */
+.buildingsContainer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+
+/* Center Ring */
+.centerRing {
+    position: absolute;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Inner Ring */
+.innerRing {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+/* Outer Ring */
+.outerRing {
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+}
+
+/* Ring Slots - Position items around the ring */
+.ringSlot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    --angle: calc(360deg / var(--slot-count) * var(--slot-index) - 90deg);
+    transform:
+        translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-50% - 0px)) rotate(calc(-1 * var(--angle)));
+    pointer-events: none;
+}
+
+.innerRing .ringSlot {
+    transform:
+        translate(-50%, -50%) rotate(var(--angle)) translateY(-140px) rotate(calc(-1 * var(--angle)));
+}
+
+.outerRing .ringSlot {
+    transform:
+        translate(-50%, -50%) rotate(var(--angle)) translateY(-240px) rotate(calc(-1 * var(--angle)));
+}
+
+/* =========================================
+   BUILDING NODE
+   ========================================= */
+.buildingNode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    pointer-events: auto;
+    position: absolute;
+    /* Changed to absolute for manual layout */
+}
+
+
+/* Hover effect removed as requested */
+
+
+/* Node Inner - The circular building icon */
+.nodeInner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.large .nodeInner {
+    width: 100px;
+    height: 100px;
+    border-width: 3px;
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.15);
+}
+
+.medium .nodeInner {
+    width: 72px;
+    height: 72px;
+}
+
+.small .nodeInner {
+    width: 60px;
+    height: 60px;
+}
+
+.nodeIcon {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.large .nodeIcon {
+    font-size: 2.5rem;
+}
+
+.medium .nodeIcon {
+    font-size: 1.75rem;
+}
+
+.small .nodeIcon {
+    font-size: 1.5rem;
+}
+
+.nodeSprite {
+    width: 120%;
+    height: 120%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect removed as requested */
+
+
+.hasSprite .nodeInner {
+    background: transparent;
+    border-color: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.large.hasSprite .nodeInner {
+    width: 160px;
+    height: 160px;
+}
+
+.medium.hasSprite .nodeInner {
+    width: 120px;
+    height: 120px;
+}
+
+.small.hasSprite .nodeInner {
+    width: 90px;
+    height: 90px;
+}
+
+/* Node Label */
+.nodeLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+}
+
+.nodeName {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+}
+
+.small .nodeName {
+    font-size: 0.6875rem;
+}
+
+.nodeLevel {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.125rem 0.5rem;
+    border-radius: 10px;
+}
+
+/* =========================================
+   STATES
+   ========================================= */
+
+/* Locked State */
+.locked .nodeInner {
+    opacity: 0.4;
+    border-style: dashed;
+}
+
+.locked .nodeIcon {
+    filter: grayscale(1) opacity(0.6);
+}
+
+.locked .nodeName {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Constructing State */
+.constructing .nodeInner {
+    animation: constructPulse 1.5s ease-in-out infinite;
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.constructingIndicator {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
+
+.hammer {
+    font-size: 1.25rem;
+    animation: hammerSwing 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes constructPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+    }
+}
+
+@keyframes hammerSwing {
+    from {
+        transform: rotate(-15deg);
+    }
+
+    to {
+        transform: rotate(15deg);
+    }
+}
+
+/* =========================================
+   PROGRESS BAR ON BUILDING
+   ========================================= */
+.progressBarContainer {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progressBarFill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #22c55e 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.large .progressBarContainer {
+    width: 80px;
+    height: 8px;
+    bottom: -10px;
+}
+
+.medium .progressBarContainer {
+    width: 60px;
+    height: 6px;
+    bottom: -8px;
+}
+
+.small .progressBarContainer {
+    width: 50px;
+    height: 5px;
+    bottom: -6px;
+}

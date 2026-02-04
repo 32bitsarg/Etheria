@@ -1,0 +1,30 @@
+{
+  "name": "lootsystem",
+  "version": "1.0.0",
+  "description": "Sistema de loot aleatorio inspirado en Diablo 2",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/core && npm run build -w packages/races && npm run build -w packages/data",
+    "build:core": "npm run build -w packages/core",
+    "build:races": "npm run build -w packages/races",
+    "build:data": "npm run build -w packages/data",
+    "dev": "npm run dev -w apps/web",
+    "test": "npm run test -w packages/core",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "loot",
+    "diablo",
+    "rpg",
+    "game-dev",
+    "random",
+    "drop-system"
+  ],
+  "author": "",
+  "license": "MIT"
+}

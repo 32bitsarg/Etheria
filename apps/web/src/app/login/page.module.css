@@ -1,0 +1,442 @@
+/* Main Container: Split Layout - Medieval Edition */
+.main {
+    min-height: 100vh;
+    display: flex;
+    background: var(--bg-primary);
+    overflow: hidden;
+    font-family: var(--font-body);
+}
+
+/* LEFT SIDE: Hero / Branding */
+.heroSection {
+    flex: 1;
+    position: relative;
+    background: #0c0a09;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    /* Compact padding */
+    color: var(--text-primary);
+    overflow: hidden;
+    border-right: 4px solid var(--border-medium);
+}
+
+/* Background Image with Overlay */
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/assets/landing/hero-medieval-oil.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.6;
+    filter: sepia(0.3) blur(2px);
+    z-index: 0;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 10;
+    max-width: 650px;
+    animation: fadeIn 1s ease-out;
+    margin: 0 auto;
+    /* Enhance centering */
+}
+
+/* Branding */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    /* Compact margin */
+    flex-direction: column;
+    text-align: center;
+}
+
+.logo {
+    width: 100px;
+    /* Compact Size */
+    height: 100px;
+    /* Compact Size */
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+    padding: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.appName {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    /* Compact Font */
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: linear-gradient(to bottom, #fcd34d 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    margin: 0;
+}
+
+.tagline {
+    font-size: 1.25rem;
+    /* Compact Font */
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: 2rem;
+    /* Compact margin */
+    line-height: 1.6;
+    font-style: italic;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.75rem 0;
+    /* Compact padding */
+}
+
+/* Feature/Changelog mini-card (The Scroll) */
+.updateCard {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.updateCard::after {
+    /* Wax Seal */
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    background: var(--secondary);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.updateHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-medium);
+}
+
+.updateTitle {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.versionBadge {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border-medium);
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.updateItem {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.updateBullet {
+    color: var(--primary);
+}
+
+/* RIGHT SIDE: Form */
+.formSection {
+    width: 500px;
+    /* Slightly narrower */
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    /* Compact padding */
+    position: relative;
+    z-index: 20;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    justify-content: center;
+    /* Center vertically */
+}
+
+.formWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.welcomeText {
+    margin-bottom: 1.5rem;
+    /* Compact margin */
+    text-align: center;
+}
+
+.heading {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subHeading {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* Tabs Redesign - Medieval Buttons */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    /* Compact margin */
+    border-bottom: 1px solid var(--border-medium);
+    padding-bottom: 0.75rem;
+}
+
+.tab {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.activeTab {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    background: linear-gradient(to top, rgba(212, 175, 55, 0.1), transparent);
+}
+
+.tab:hover:not(.activeTab) {
+    color: var(--text-primary);
+}
+
+/* Form Fields */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* Compact gap */
+}
+
+.field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    font-family: var(--font-heading);
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-medium);
+    background: #000;
+    color: var(--text-primary);
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    /* Gold Glow */
+}
+
+/* Action Button: Royal Standard */
+.submitBtn {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, #991b1b, #7f1d1d);
+    color: #fce7f3;
+    border: 1px solid #b91c1c;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submitBtn:hover {
+    background: linear-gradient(to bottom, #b91c1c, #991b1b);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error {
+    background: rgba(127, 29, 29, 0.2);
+    color: #fca5a5;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid #7f1d1d;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Password Strength Meter */
+.passwordStrength {
+    margin-top: 0.75rem;
+}
+
+.strengthBar {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.strengthFill {
+    height: 100%;
+    transition: all 0.3s;
+    background: var(--primary);
+    /* Default gold */
+}
+
+.requirementsList {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.met {
+    color: var(--success);
+}
+
+.unmet {
+    color: var(--text-muted);
+}
+
+/* Remember me */
+.rememberMe {
+    display: flex;
+    align-items: center;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.checkboxLabel input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--primary);
+    background: #000;
+    border: 1px solid var(--border-medium);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .main {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .heroSection {
+        padding: 3rem 2rem;
+        flex: none;
+        min-height: 300px;
+        border-right: none;
+        border-bottom: 4px solid var(--border-medium);
+    }
+
+    .logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .appName {
+        font-size: 3rem;
+    }
+
+    .tagline {
+        display: none;
+    }
+
+    .updateCard {
+        display: none;
+    }
+
+    .formSection {
+        width: 100%;
+        padding: 2rem;
+    }
+}

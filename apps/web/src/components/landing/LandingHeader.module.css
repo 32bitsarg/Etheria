@@ -1,0 +1,156 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--primary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 2rem;
+    transition: all var(--transition-normal);
+}
+
+/* Dark mode support stub */
+/* Dark mode support stub removed - Dark is now default in globals.css */
+
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+    transform: scale(1.02);
+}
+
+.logoImage {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.logoText {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.versionBadge {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navLink {
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    position: relative;
+    letter-spacing: 0.05em;
+}
+
+.navLink:hover {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.activeLink {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.actionButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.loginBtn {
+    color: var(--text-secondary);
+}
+
+.loginBtn:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.primaryBtn {
+    background: linear-gradient(to bottom, #991b1b, #7f1d1d);
+    color: #e7e5e4;
+    border: 1px solid var(--primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.primaryBtn:hover {
+    background: linear-gradient(to bottom, #b91c1c, #991b1b);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0.75rem 1rem;
+        gap: 1rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nav {
+        display: none;
+        /* Mobile menu would be needed here, keeping simple for now */
+    }
+
+    .versionBadge {
+        display: none;
+    }
+}

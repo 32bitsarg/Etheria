@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// USER & AUTH
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String?  @unique
+  password  String?  // Hashed, null for mock auth
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  player    Player?
+}
+
+// ============================================
+// PLAYER & GAME STATE
+// ============================================
+
+model Player {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Race (elfo, humano, orco, enano)
+  race      String
+  
+  // Resources
+  wood      Float    @default(500)
+  iron      Float    @default(300)
+  gold      Float    @default(200)
+  populationUsed Int @default(0)
+  populationMax  Int @default(200)
+  
+  // Timestamps for resource calculation
+  lastResourceUpdate DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  city      City?
+  allianceMember AllianceMember?
+}
+
+// ============================================
+// ALLIANCES
+// ============================================
+
+model Alliance {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  tag         String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  
+  members     AllianceMember[]
+}
+
+model AllianceMember {
+  id          String   @id @default(cuid())
+  
+  allianceId  String
+  alliance    Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  
+  playerId    String   @unique
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  rank        String   @default("MEMBER") // LEADER, OFFICER, MEMBER
+  joinedAt    DateTime @default(now())
+  
+  @@unique([allianceId, playerId])
+}
+
+// ============================================
+// CITY & BUILDINGS
+// ============================================
+
+model City {
+  id        String   @id @default(cuid())
+  name      String
+  
+  // Player relation
+  playerId  String   @unique
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Coordinates for world map
+  x         Int      @default(0)
+  y         Int      @default(0)
+  
+  buildings         Building[]
+  constructionQueue ConstructionQueueItem[]
+  
+  // Military
+  units             Unit[]
+  trainingQueue     TrainingQueueItem[]
+}
+
+model Building {
+  id        String   @id @default(cuid())
+  
+  // Building type (town_hall, farm, lumber_mill, etc)
+  type      String
+  level     Int      @default(0)
+  
+  // City relation
+  cityId    String
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  @@unique([cityId, type])
+}
+
+model ConstructionQueueItem {
+  id           String   @id @default(cuid())
+  
+  buildingType String
+  targetLevel  Int
+  startTime    DateTime @default(now())
+  endTime      DateTime
+  
+  // City relation
+  cityId       String
+  city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+}
+
+// ============================================
+// MILITARY
+// ============================================
+
+model Unit {
+  id        String   @id @default(cuid())
+  
+  // Unit type (infantry, archer, etc)
+  type      String
+  count     Int      @default(0)
+  
+  // City relation
+  cityId    String
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  @@unique([cityId, type])
+}
+
+model TrainingQueueItem {
+  id           String   @id @default(cuid())
+  
+  unitType     String
+  count        Int
+  startTime    DateTime @default(now())
+  endTime      DateTime
+  
+  // City relation
+  cityId       String
+  city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+}

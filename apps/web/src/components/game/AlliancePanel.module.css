@@ -1,0 +1,209 @@
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color: var(--text-primary);
+}
+
+.title {
+    font-size: 1.5rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border-medium);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tabBtn {
+    flex: 1;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-medium);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tabBtn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.tabBtn.active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Sections */
+.section {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-medium);
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 0 0 1rem 0;
+    border-bottom: 1px solid var(--border-medium);
+    padding-bottom: 0.5rem;
+}
+
+/* Forms */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-medium);
+    padding: 0.75rem;
+    color: var(--text-primary);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+}
+
+.actionBtn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, var(--primary) 0%, #b8860b 100%);
+    color: #000;
+    border: 1px solid #ffd700;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.actionBtn:disabled {
+    filter: grayscale(1);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Member List */
+.memberList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.memberItem {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-medium);
+    gap: 1rem;
+}
+
+.memberName {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.memberRank {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+    background: #333;
+    color: #aaa;
+}
+
+.memberRank.leader {
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+/* Alliance Info */
+.infoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.infoItem {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.75rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.infoValue {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.infoLabel {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* Danger Zone */
+.dangerZone {
+    margin-top: 2rem;
+    border-top: 1px solid #ef4444;
+    padding-top: 1rem;
+}
+
+.dangerBtn {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 0.75rem;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.dangerBtn:hover {
+    background: #ef4444;
+    color: #fff;
+}

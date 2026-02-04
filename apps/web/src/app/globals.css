@@ -1,0 +1,150 @@
+/* ============================================
+   STRATEGY GAME - DESIGN SYSTEM
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+/* ============================================
+   CSS VARIABLES - THEME SYSTEM
+   ============================================ */
+
+:root {
+  /* ROYAL DARK FANTASY - AUTHENTIC MEDIEVAL */
+
+  /* Fonts */
+  --font-heading: 'Cinzel Decorative', serif;
+  --font-body: 'MedievalSharp', cursive;
+
+  /* Backgrounds */
+  --bg-primary: #0c0a09;
+  /* Stone Black */
+  --bg-secondary: #1c1917;
+  /* Dark Wood / Iron */
+  --bg-tertiary: #292524;
+  /* Deep Shadow */
+  --bg-card: rgba(28, 25, 23, 0.95);
+  /* Opaque parchment overlay */
+  --bg-hover: #44403c;
+
+  /* Text */
+  --text-primary: #e7e5e4;
+  /* Warm Ivory (Paper) */
+  --text-secondary: #a8a29e;
+  /* Stone Grey */
+  --text-muted: #57534e;
+  /* Darker Stone */
+
+  /* Borders */
+  --border-light: rgba(212, 175, 55, 0.3);
+  /* Gold Border */
+  --border-medium: #44403c;
+  /* Iron Border */
+  --border-glow: 0 0 15px rgba(212, 175, 55, 0.15);
+  /* Soft Gold Glow */
+
+  /* Brand Colors */
+  --primary: #d4af37;
+  /* Metallic Gold (Royal) */
+  --primary-hover: #b5952f;
+  --primary-light: #fcd34d;
+  /* Highlight Gold */
+
+  --secondary: #7f1d1d;
+  /* Blood Red (War) */
+  --secondary-hover: #991b1b;
+
+  /* Status */
+  --success: #15803d;
+  --warning: #d97706;
+  --error: #991b1b;
+  --info: #0369a1;
+
+  /* Resources */
+  --wood: #a0522d;
+  --iron: #737373;
+  --gold: #fbbf24;
+  --population: #4ade80;
+
+  /* Shadows (Atmospheric) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+
+  /* Border Radius */
+  --radius-sm: 0.1rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}

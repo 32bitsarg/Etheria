@@ -8,10 +8,20 @@ interface CityMapProps {
     buildings: BuildingState[];
     queue: ConstructionQueueItem[];
     onBuildingClick: (type: BuildingType) => void;
+    isMobile?: boolean;
 }
 
-// Layout con posiciones absolutas (%) para coincidir con el fondo
-const BUILDING_LAYOUT: { type: BuildingType; x: string; y: string; size: 'large' | 'medium' | 'small' }[] = [
+type LayoutItem = {
+    type: BuildingType;
+    x: string;
+    y: string;
+    size: 'large' | 'medium' | 'small';
+    offsetX?: string;
+    offsetY?: string;
+};
+
+// Layout Original para Versión Web (Escritorio)
+const DESKTOP_LAYOUT: LayoutItem[] = [
     { type: BuildingType.TOWN_HALL, x: '45%', y: '29%', size: 'large' },
     { type: BuildingType.FARM, x: '45%', y: '60%', size: 'medium' },
     { type: BuildingType.LUMBER_MILL, x: '15%', y: '60%', size: 'medium' },
@@ -20,6 +30,18 @@ const BUILDING_LAYOUT: { type: BuildingType; x: string; y: string; size: 'large'
     { type: BuildingType.WAREHOUSE, x: '55%', y: '29%', size: 'small' },
     { type: BuildingType.BARRACKS, x: '55%', y: '50%', size: 'medium' },
     { type: BuildingType.ALLIANCE_CENTER, x: '40%', y: '45%', size: 'small' },
+];
+
+// Layout Personalizado para Versión Móvil
+const MOBILE_LAYOUT: LayoutItem[] = [
+    { type: BuildingType.TOWN_HALL, x: '50%', y: '50%', size: 'large', offsetX: '27px', offsetY: '-39px' },
+    { type: BuildingType.FARM, x: '50%', y: '50%', size: 'medium', offsetX: '155px', offsetY: '89px' },
+    { type: BuildingType.LUMBER_MILL, x: '50%', y: '50%', size: 'medium', offsetX: '21px', offsetY: '122px' },
+    { type: BuildingType.IRON_MINE, x: '50%', y: '50%', size: 'medium', offsetX: '-99px', offsetY: '-240px' },
+    { type: BuildingType.GOLD_MINE, x: '50%', y: '50%', size: 'medium', offsetX: '101px', offsetY: '-230px' },
+    { type: BuildingType.WAREHOUSE, x: '55%', y: '29%', size: 'small' },
+    { type: BuildingType.BARRACKS, x: '50%', y: '50%', size: 'medium', offsetX: '-152px', offsetY: '-108px' },
+    { type: BuildingType.ALLIANCE_CENTER, x: '50%', y: '50%', size: 'small', offsetX: '-103px', offsetY: '41px' },
 ];
 
 const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -45,7 +67,7 @@ const BUILDING_SPRITES: Partial<Record<BuildingType, string>> = {
 };
 
 
-export function CityMap({ buildings, queue, onBuildingClick }: CityMapProps) {
+export function CityMap({ buildings, queue, onBuildingClick, isMobile = false }: CityMapProps) {
     const [currentTime, setCurrentTime] = useState(Date.now());
 
     useEffect(() => {
@@ -61,21 +83,21 @@ export function CityMap({ buildings, queue, onBuildingClick }: CityMapProps) {
     const getBuilding = (type: BuildingType) =>
         buildings.find(b => b.type === type);
 
+    const layout = isMobile ? MOBILE_LAYOUT : DESKTOP_LAYOUT;
+
     return (
         <div className={styles.mapWrapper}>
-            {/* Background Image */}
             <div className={styles.ambientBg} />
 
-            {/* Buildings Container */}
             <div className={styles.buildingsContainer}>
-                {BUILDING_LAYOUT.map((item) => (
+                {layout.map((item) => (
                     <div
-                        key={item.type}
+                        key={`${item.type}-${isMobile ? 'mobile' : 'desktop'}`}
                         style={{
                             position: 'absolute',
                             left: item.x,
                             top: item.y,
-                            transform: 'translate(-50%, -50%)',
+                            transform: `translate(calc(-50% + ${item.offsetX || '0px'}), calc(-50% + ${item.offsetY || '0px'}))`,
                             pointerEvents: 'auto'
                         }}
                     >
@@ -110,7 +132,6 @@ function BuildingNode({ type, building, queueItem, currentTime, onClick, size }:
     const isLocked = level === 0;
     const isConstructing = !!queueItem;
 
-    // Calculate progress
     let progress = 0;
     if (queueItem) {
         const totalDuration = queueItem.endTime - queueItem.startTime;
@@ -139,7 +160,6 @@ function BuildingNode({ type, building, queueItem, currentTime, onClick, size }:
                 )}
             </div>
 
-            {/* Progress Bar for construction */}
             {isConstructing && (
                 <div className={styles.progressBarContainer}>
                     <div

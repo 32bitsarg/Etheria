@@ -59,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             city: {
                 id: p.city.id,
                 name: p.city.name,
+                x: p.city.x,
+                y: p.city.y,
                 buildings: p.city.buildings.map((b: any) => ({
                     id: b.id,
                     type: b.type as BuildingType,

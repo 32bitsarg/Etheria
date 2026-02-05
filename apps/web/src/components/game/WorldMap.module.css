@@ -133,43 +133,61 @@
     font-weight: 600;
 }
 
-.coordHud {
+.mapControls {
     position: absolute;
-    bottom: 30px;
-    left: 30px;
-    background: rgba(0, 10, 20, 0.85);
-    color: #d4af37;
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-family: monospace;
-    font-size: 0.9rem;
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     z-index: 100;
 }
 
+.coordHud {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    color: var(--primary);
+    padding: 6px 15px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--glass-shadow);
+}
+
+.coordSeparator {
+    opacity: 0.4;
+    font-weight: 400;
+}
+
 .centerBtn {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    background: rgba(0, 10, 20, 0.9);
-    border: 2px solid #d4af37;
-    border-radius: 50%;
-    font-size: 1.5rem;
+    width: 42px;
+    height: 42px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 100;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--glass-shadow);
+    color: var(--primary);
 }
 
 .centerBtn:hover {
-    background: #d4af37;
+    background: var(--primary);
     color: #000;
-    transform: scale(1.1);
+    transform: translateY(-3px) scale(1.05);
+    border-color: var(--primary);
 }
 
 .loading {
@@ -181,4 +199,23 @@
     background: #000a12;
     color: #d4af37;
     font-size: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .mapControls {
+        top: 70px;
+        left: 10px;
+        gap: 8px;
+    }
+
+    .coordHud {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+
+    .centerBtn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
 }

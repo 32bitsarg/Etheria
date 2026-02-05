@@ -5,6 +5,9 @@ import { BuildingType } from '@lootsystem/buildings';
 // UNIDADES
 // ============================================
 
+/** Máximo de entrenamientos simultáneos en cola */
+export const MAX_TRAINING_QUEUE = 5;
+
 export enum UnitType {
     INFANTRY = 'infantry',
     ARCHER = 'archer',

@@ -1,15 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { RaceSelection } from '@/components/RaceSelection';
 import { GameDashboard } from '@/components/GameDashboard';
+import { MobileDashboard } from '@/components/game/MobileDashboard';
 import { Raza } from '@lootsystem/game-engine';
 
 export default function GamePage() {
     const router = useRouter();
+    const [isMobile, setIsMobile] = useState(false);
     const { isLoggedIn, needsRaceSelection, player, selectRace } = useAuth();
+
+    // Detectar tamaño de pantalla
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 900);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Redirigir si no está logueado
     useEffect(() => {
@@ -31,7 +44,7 @@ export default function GamePage() {
 
     // Mostrar dashboard si está logueado y tiene jugador
     if (isLoggedIn && player) {
-        return <GameDashboard />;
+        return isMobile ? <MobileDashboard /> : <GameDashboard />;
     }
 
     // Loading state

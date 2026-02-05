@@ -8,14 +8,22 @@ import styles from './GlobalChat.module.css';
 interface GlobalChatProps {
     userId: string;
     username: string;
+    showHeader?: boolean;
 }
 
 type ChatTab = 'global' | 'alliance';
 
-export function GlobalChat({ userId, username }: GlobalChatProps) {
+export function GlobalChat({ userId, username, showHeader = true }: GlobalChatProps) {
     const { player } = useAuth();
     const [activeTab, setActiveTab] = useState<ChatTab>('global');
     const [isMinimized, setIsMinimized] = useState(false);
+
+    // Force non-minimized if header is hidden (mobile view)
+    useEffect(() => {
+        if (!showHeader && isMinimized) {
+            setIsMinimized(false);
+        }
+    }, [showHeader, isMinimized]);
 
     const allianceId = player?.alliance?.allianceId;
     const channel = activeTab;
@@ -69,34 +77,36 @@ export function GlobalChat({ userId, username }: GlobalChatProps) {
     };
 
     return (
-        <div className={`${styles.chatContainer} ${isMinimized ? styles.minimized : ''}`}>
+        <div className={`${styles.chatContainer} ${isMinimized ? styles.minimized : ''} chat-root-container`}>
             {/* Header */}
-            <div className={styles.chatHeader} onClick={() => setIsMinimized(false)}>
-                <div className={styles.headerLeft}>
-                    <span className={`${styles.statusDot} ${isConnected ? styles.connected : styles.disconnected}`} />
-                    <span className={styles.headerTitle}>
-                        {activeTab === 'global' ? '🌍 Chat Global' : '🛡️ Alianza'}
-                    </span>
+            {showHeader && (
+                <div className={styles.chatHeader} onClick={() => setIsMinimized(false)}>
+                    <div className={styles.headerLeft}>
+                        <span className={`${styles.statusDot} ${isConnected ? styles.connected : styles.disconnected}`} />
+                        <span className={styles.headerTitle}>
+                            {activeTab === 'global' ? '🌍 Chat Global' : '🛡️ Alianza'}
+                        </span>
+                    </div>
+                    <button className={styles.minimizeBtn} onClick={toggleMinimize}>
+                        {isMinimized ? '▲' : '▼'}
+                    </button>
                 </div>
-                <button className={styles.minimizeBtn} onClick={toggleMinimize}>
-                    {isMinimized ? '▲' : '▼'}
-                </button>
-            </div>
+            )}
 
             {/* Chat Body */}
-            {!isMinimized && (
+            {(showHeader ? !isMinimized : true) && (
                 <>
                     {/* Tabs */}
-                    <div className={styles.tabs}>
+                    <div className={`${styles.tabs} chat-tabs-container`}>
                         <button
-                            className={`${styles.tabBtn} ${activeTab === 'global' ? styles.tabBtnActive : ''}`}
+                            className={`${styles.tabBtn} ${activeTab === 'global' ? styles.tabBtnActive : ''} chat-tab-btn`}
                             onClick={() => setActiveTab('global')}
                         >
                             🌍 Global
                         </button>
                         {player?.alliance && (
                             <button
-                                className={`${styles.tabBtn} ${activeTab === 'alliance' ? styles.tabBtnActive : ''}`}
+                                className={`${styles.tabBtn} ${activeTab === 'alliance' ? styles.tabBtnActive : ''} chat-tab-btn`}
                                 onClick={() => setActiveTab('alliance')}
                             >
                                 🛡️ Alianza
@@ -104,7 +114,7 @@ export function GlobalChat({ userId, username }: GlobalChatProps) {
                         )}
                     </div>
 
-                    <div className={styles.messagesContainer}>
+                    <div className={`${styles.messagesContainer} chat-messages-container`}>
                         {isLoading ? (
                             <div className={styles.loadingState}>
                                 <span className={styles.spinner} />
@@ -144,7 +154,7 @@ export function GlobalChat({ userId, username }: GlobalChatProps) {
                     </div>
 
                     {/* Input */}
-                    <form className={styles.inputContainer} onSubmit={handleSubmit}>
+                    <form className={`${styles.inputContainer} chat-input-container`} onSubmit={handleSubmit}>
                         <input
                             ref={inputRef}
                             type="text"
@@ -152,7 +162,7 @@ export function GlobalChat({ userId, username }: GlobalChatProps) {
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder={activeTab === 'alliance' ? "Mensaje a la alianza..." : "Mensaje global..."}
-                            className={styles.chatInput}
+                            className={`${styles.chatInput} chat-input-field`}
                             maxLength={500}
                             disabled={!!error}
                         />

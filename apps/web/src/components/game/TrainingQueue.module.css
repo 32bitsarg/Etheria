@@ -64,6 +64,13 @@
     margin-right: 0.5rem;
 }
 
+.headerIconImg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 0.5rem;
+}
+
 .queueCount {
     flex: 1;
     font-size: 0.75rem;

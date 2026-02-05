@@ -1,142 +1,90 @@
-# 🎲 Sistema de Loot
+# ⚔️ Etheria
 
-Sistema de generación de loot inspirado en Diablo II, completamente en español.
+![Etheria Banner](https://raw.githubusercontent.com/32bitsarg/Etheria/main/apps/web/public/assets/logo.png)
 
-## ✨ Características
+> **Etheria** es un juego de estrategia RPG premium para navegador con una estética de fantasía oscura. Lidera tu civilización desde un pequeño asentamiento hasta convertirla en un imperio legendario. Construye, gestiona recursos y conquista las tierras de Etheria.
 
-### Sistema de Rareza
-- **Normal** (Gris) - Sin afijos
-- **Mágico** (Azul) - 1-2 afijos
-- **Raro** (Amarillo) - 3-6 afijos
-- **Legendario** (Naranja) - Stats fijos únicos
-- **Conjunto** (Verde) - Parte de un set con bonuses
+---
 
-### Sistema de Afijos
-- **Prefijos**: Afilado, Cortante, Devastador, Cruel, Brutal, Divino, etc.
-- **Sufijos**: de Vida, de Vitalidad, de la Ballena, del Vampiro, del Rayo, etc.
-- **Tiers**: Cada afijo tiene 3 niveles de poder
+## 🌌 Etheria
 
-### Sistema de Balance
+En un mundo envuelto en misterios antiguos y guerras constantes, cuatro grandes razas compiten por la dominancia. Elige tu camino y moldea el destino de tu pueblo.
 
-#### Pity System
-Garantiza drops después de cierta cantidad de intentos:
-- Legendario: garantizado después de 50 drops sin uno
-- Raro: garantizado después de 15 drops sin uno
-- Conjunto: garantizado después de 60 drops sin uno
+### 🎭 Razas Ancestrales
+- **🛡️ Humanos**: Maestros de la adaptación. Producción equilibrada y unidades militares versátiles.
+- **🌿 Elfos**: Armonía con la naturaleza. Eficiencia superior en oro y combate a distancia especializado.
+- **🌑 Orcos**: Fuerza bruta y hierro. Enfocados en la recolección agresiva de recursos e infantería pesada.
+- **🏔️ Enanos**: Moldeadores de la tierra. Inigualables en la extracción de madera/hierro y fortificaciones defensivas.
 
-#### Bad Luck Protection
-Aumenta las chances después de rachas de drops normales:
-- Se activa después de 5 drops normales consecutivos
-- +10% por cada drop normal adicional
-- Máximo bonus: +100%
+---
 
-### Items Legendarios
-Items predefinidos con stats fijos y descripciones flavorizadas:
-- Corona del Rey Olvidado
-- Filo de la Sombra
-- Piel del Dragón Ancestral
-- Anillo del Poder Absoluto
-- Y más...
+## 🏰 Mecánicas Principales de Juego
 
-### Items de Conjunto
-Sets completos con bonuses por piezas:
-- **Armadura del Guerrero Inmortal** (3 piezas)
-- **Vestiduras del Archimago** (4 piezas)
-- **Equipo del Cazador Nocturno** (3 piezas)
+Etheria combina estrategia profunda con progresión en tiempo real:
 
-## 📦 Estructura del Proyecto
+### 🛠️ Gestión de la Ciudad
+- **Ciudad Isométrica Radial**: Un diseño de ciudad único y visualmente impactante donde cada edificio es parte de un ecosistema complejo.
+- **Cola de Construcción**: Planificación estratégica con una cola secuencial de 3 espacios.
+- **Recompensas Instantáneas**: Acelera tu progreso inicial con finalizaciones instantáneas para estructuras de bajo nivel.
 
-\`\`\`
-lootsystem/
+### 💰 Economía en Tiempo Real
+Experimenta una economía viva con generación de recursos actualizada cada segundo (`processTick`):
+- **🌲 Madera**: La base de todas las estructuras.
+- **⚙️ Hierro**: El núcleo de tu poder militar.
+- **🪙 Oro**: La moneda para el comercio e investigaciones de alto nivel.
+- **🍞 Población**: Tu recurso más preciado, motor de la mano de obra y la guerra.
+
+### ⚔️ Militar y Conquista
+- **Cuarteles y Entrenamiento**: Recluta unidades especializadas basadas en las fortalezas únicas de tu raza.
+- **Sistema de Batalla**: Envía tropas para expandir tus fronteras, defender tu ciudad o saquear recursos enemigos.
+- **Informes e Inteligencia**: Registros detallados de batalla y misiones de espionaje para mantenerte por delante de tus rivales.
+
+---
+
+## 🛠️ Arquitectura Técnica
+
+Construido con una arquitectura de monorepo moderna y escalable:
+
+### 💻 Stack Tecnológico
+- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **Estilos**: Vanilla CSS Modules (Estética Aero, fantasía oscura)
+- **Backend**: API de Node.js con [Prisma ORM](https://www.prisma.io/)
+- **Base de Datos**: PostgreSQL
+- **Gestión de Estado**: Contexto de React / Hooks (`useAuth`, `useTheme`)
+- **Gestor de Paquetes**: npm Workspaces
+
+### 📂 Estructura del Espacio de Trabajo
+```
+/lootsystem
+├── apps/
+│   └── web/                # Aplicación Frontend Next.js
 ├── packages/
-│   └── core/                 # Librería principal
-│       ├── src/
-│       │   ├── types/        # Tipos TypeScript
-│       │   ├── rarity/       # Sistema de rarezas
-│       │   ├── affix/        # Sistema de afijos
-│       │   ├── item/         # Items base
-│       │   ├── legendario/   # Items legendarios
-│       │   ├── conjunto/     # Items de conjunto
-│       │   ├── treasure-class/  # Treasure Classes
-│       │   └── loot-generator/  # Generador principal
-│       └── demo.ts           # Demo de consola
-└── apps/
-    └── web/                  # Frontend Next.js
-        └── src/app/          # Páginas
-\`\`\`
+│   ├── game-engine/        # Lógica central del juego y procesamiento de ticks
+│   ├── buildings/          # Datos de edificios, costos y fórmulas
+│   ├── resources/          # Tipos de recursos y lógica de producción
+│   ├── races/              # Rasgos y bonificaciones específicas de cada raza
+│   └── combat/             # Simulación de batalla y estadísticas de unidades
+└── docs/                   # Especificaciones técnicas de bajo nivel
+```
 
-## 🚀 Uso Rápido
+---
 
-### Instalación
+## 🚀 Primeros Pasos
 
-\`\`\`bash
-npm install
-npm run build -w packages/core
-\`\`\`
+1. **Clonar el repositorio**
+2. **Instalar dependencias**: `npm install`
+3. **Configurar el entorno**: Configurar `.env.local` en `apps/web`
+4. **Sincronizar esquema de base de datos**: `npx prisma db push`
+5. **Ejecutar el servidor de desarrollo**: `npm run dev`
 
-### Uso del Core
+---
 
-\`\`\`typescript
-import { GeneradorLoot, Rareza } from '@lootsystem/core';
+## 🎨 Identidad Visual
+Etheria utiliza una estética **Dark Fantasy Aero**:
+- **Glassmorphism**: Elementos de interfaz elegantes y semitransparentes.
+- **HUD Dinámico**: Contadores de recursos animados en tiempo real.
+- **Interfaz Temática**: La interfaz adapta sus visuales según la facción elegida.
 
-// Crear generador con configuración
-const generador = new GeneradorLoot({
-  hallazgoMagico: 150, // +150% Magic Find
-  pity: {
-    legendario: 50,    // Garantizado después de 50 drops
-    raro: 15,
-    conjunto: 60,
-  },
-  badLuck: {
-    habilitado: true,
-    dropsParaActivar: 5,
-    bonusPorcentaje: 10,
-    maxBonus: 100,
-  },
-});
+---
 
-// Generar loot desde un boss
-const resultado = generador.generarDesdeTC('tc_jefe_acto1', {
-  nivelMonstruo: 30,
-  esJefe: true,
-});
-
-// Ver items
-for (const item of resultado.items) {
-  console.log(\`\${item.nombre} (\${item.rareza})\`);
-}
-
-// Ver estado del balance
-console.log(\`Drops sin Legendario: \${resultado.estadoPity?.dropsSinLegendario}\`);
-console.log(\`Bonus Bad Luck: +\${resultado.estadoBadLuck?.bonusActual}%\`);
-\`\`\`
-
-### Frontend
-
-\`\`\`bash
-# Iniciar servidor de desarrollo
-npm run dev -w apps/web
-
-# Abrir http://localhost:3000
-\`\`\`
-
-## 📊 Treasure Classes
-
-| TC | Nombre | Picks | Modificadores |
-|----|--------|-------|---------------|
-| tc_monstruo_normal | Monstruo Normal | 1 | - |
-| tc_monstruo_campeon | Monstruo Campeón | 2 | +50% Legendario |
-| tc_monstruo_elite | Monstruo Élite | 3 | +150% Legendario |
-| tc_jefe_acto1 | Jefe del Acto 1 | 5 | +300% Legendario |
-| tc_jefe_final | Jefe Final | 7 | +500% Legendario |
-
-## 🎮 Demo
-
-\`\`\`bash
-cd packages/core
-npx ts-node demo.ts
-\`\`\`
-
-## 📝 Licencia
-
-MIT
+*Desarrollado con ❤️ por el equipo de Etheria.*

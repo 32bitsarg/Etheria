@@ -20,6 +20,7 @@ interface TrainingQueueProps {
     queue: TrainingQueueItem[];
     onCancel: (id: string) => void;
     onFinishNow?: (id: string) => void;
+    onComplete?: () => void;
 }
 
 const UNIT_ICONS: Record<string, string> = {
@@ -29,16 +30,27 @@ const UNIT_ICONS: Record<string, string> = {
     [UnitType.CAVALRY]: '🐎',
 };
 
-export function TrainingQueue({ queue, onCancel, onFinishNow }: TrainingQueueProps) {
+export function TrainingQueue({ queue, onCancel, onFinishNow, onComplete }: TrainingQueueProps) {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [isExpanded, setIsExpanded] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentTime(Date.now());
+            const now = Date.now();
+            setCurrentTime(now);
+
+            // Check if any training just finished
+            const finishedItem = queue.find(item => {
+                const end = new Date(item.endTime).getTime();
+                return end <= now && end > currentTime;
+            });
+
+            if (finishedItem && onComplete) {
+                onComplete();
+            }
         }, 1000);
         return () => clearInterval(interval);
-    }, []);
+    }, [queue, onComplete, currentTime]);
 
     const getTime = (t: string | number | Date) => new Date(t).getTime();
 
@@ -63,7 +75,7 @@ export function TrainingQueue({ queue, onCancel, onFinishNow }: TrainingQueuePro
 
             {isExpanded && (
                 <div className={styles.list}>
-                    {queue.map((item, index) => {
+                    {queue.filter(item => getTime(item.endTime) > currentTime).map((item, index) => {
                         const info = UNIT_STATS[item.unitType as UnitType];
                         const name = info ? info.name : item.unitType;
 

@@ -135,11 +135,18 @@
 
 /* Menu Button */
 .menuBtn {
-    background: var(--bg-tertiary);
-    /* Just minimizing logic for less diff lines if possible, but user asked for specific icons/text mainly */
-    /* ... keeping it but it might be on the far right or left? */
-    display: none;
-    /* Let's hide menu button from top HUD if we are aligning resources right to sidebar. Or keep it? Assuming User focused on resources. */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--primary);
+    color: white;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
 }
 
 .menuBtn:hover {
@@ -147,6 +154,12 @@
     border-color: #ef4444;
     color: white;
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.topRight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 /* =========================================

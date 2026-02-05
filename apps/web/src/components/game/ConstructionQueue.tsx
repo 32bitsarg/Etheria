@@ -15,6 +15,7 @@ interface ConstructionQueueProps {
     queue: ConstructionQueueItem[];
     onCancel: (id: string) => void;
     onInstantComplete?: (id: string) => void;
+    onComplete?: () => void;
 }
 
 const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -28,16 +29,23 @@ const BUILDING_ICONS: Record<BuildingType, string> = {
     [BuildingType.ALLIANCE_CENTER]: '🏰',
 };
 
-export function ConstructionQueue({ queue, onCancel, onInstantComplete }: ConstructionQueueProps) {
+export function ConstructionQueue({ queue, onCancel, onInstantComplete, onComplete }: ConstructionQueueProps) {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [isExpanded, setIsExpanded] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentTime(Date.now());
+            const now = Date.now();
+            setCurrentTime(now);
+
+            // Check if any build just finished
+            const finishedItem = queue.find(item => item.endTime <= now && item.endTime > currentTime);
+            if (finishedItem && onComplete) {
+                onComplete();
+            }
         }, 1000);
         return () => clearInterval(interval);
-    }, []);
+    }, [queue, onComplete, currentTime]);
 
     // If empty, show minimal indicator
     if (queue.length === 0) {
@@ -63,7 +71,7 @@ export function ConstructionQueue({ queue, onCancel, onInstantComplete }: Constr
             {/* Queue Items - Only when expanded */}
             {isExpanded && (
                 <div className={styles.list}>
-                    {queue.map((item, index) => {
+                    {queue.filter(item => item.endTime > currentTime).map((item, index) => {
                         const info = BUILDING_INFO[item.buildingType];
                         const remainingMs = item.endTime - currentTime;
                         const remaining = Math.max(0, Math.floor(remainingMs / 1000));

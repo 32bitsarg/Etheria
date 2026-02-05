@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import {
     getProductionPerHour,
-    BuildingType
+    BuildingType,
+    resolveBattle,
+    UnitType,
+    UNIT_STATS
 } from '@lootsystem/game-engine';
+import { gameEvents, EVENTS } from '@/lib/gameEvents';
 
 // Types for Prisma results
 type BuildingRecord = { type: string; level: number };
@@ -90,6 +94,30 @@ export async function POST(request: NextRequest) {
             (item: any) => item.endTime <= now
         );
 
+        // Check arriving movements
+        const arrivingMovements = await prisma.combatMovement.findMany({
+            where: {
+                targetCityId: player.city.id,
+                endTime: { lt: now }
+            },
+            include: {
+                originCity: {
+                    include: {
+                        player: true
+                    }
+                }
+            }
+        });
+
+        // Check returning movements
+        const returningMovements = await prisma.combatMovement.findMany({
+            where: {
+                originCityId: player.city.id,
+                type: 'RETURN',
+                endTime: { lt: now }
+            }
+        });
+
         // Prepare building updates
         const buildingUpdates: { type: string; level: number }[] = [];
         for (const completed of completedConstructions) {
@@ -175,6 +203,136 @@ export async function POST(request: NextRequest) {
                     },
                 });
             }
+
+            // --- PROCESAR COMBATES ---
+            for (const movement of arrivingMovements) {
+                if (movement.type === 'ATTACK') {
+                    // Obtener defensor con sus tropas actuales
+                    const df = await tx.city.findUnique({
+                        where: { id: movement.targetCityId },
+                        include: { units: true, player: true }
+                    });
+
+                    if (!df) continue;
+
+                    const attackerUnits = Array.isArray(movement.units)
+                        ? movement.units
+                        : Object.entries(movement.units as any).map(([type, count]) => ({ type, count: count as number }));
+
+                    const defenderUnits = df.units.map(u => ({ type: u.type, count: u.count }));
+
+                    const result = resolveBattle(
+                        attackerUnits as any,
+                        defenderUnits,
+                        { wood: df.player.wood, iron: df.player.iron, gold: df.player.gold }
+                    );
+
+                    // Actualizar defensor (bajas y recursos robados)
+                    for (const loss of result.defenderLosses) {
+                        await tx.unit.update({
+                            where: { cityId_type: { cityId: df.id, type: loss.type } },
+                            data: { count: { decrement: loss.count } }
+                        });
+                    }
+
+                    await tx.player.update({
+                        where: { id: df.playerId },
+                        data: {
+                            wood: { decrement: result.lootedResources.wood },
+                            iron: { decrement: result.lootedResources.iron },
+                            gold: { decrement: result.lootedResources.gold }
+                        }
+                    });
+
+                    // Obtener datos del atacante para el reporte
+                    const attackerCityData = await tx.city.findUnique({
+                        where: { id: movement.originCityId },
+                        select: { playerId: true, name: true }
+                    });
+
+                    // Crear informe
+                    const reportData = {
+                        defenderId: df.playerId,
+                        attackerId: attackerCityData?.playerId || '',
+                        originCityName: attackerCityData?.name || 'Ciudad',
+                        targetCityName: df.name,
+                        won: result.won,
+                        lootedWood: result.lootedResources.wood,
+                        lootedIron: result.lootedResources.iron,
+                        lootedGold: result.lootedResources.gold,
+                        troopSummary: {
+                            attackerInitial: attackerUnits,
+                            attackerLosses: result.attackerLosses,
+                            defenderInitial: defenderUnits,
+                            defenderLosses: result.defenderLosses
+                        } as any
+                    };
+
+                    await tx.combatReport.create({
+                        data: reportData
+                    });
+
+                    // Emitir evento para notificar a ambos jugadores
+                    gameEvents.emit(EVENTS.BATTLE_REPORT, {
+                        attackerId: attackerCityData?.playerId || '',
+                        defenderId: df.playerId,
+                        won: result.won
+                    });
+
+                    // Si quedan tropas atacantes, regresan
+                    const survivingAttakers = result.attackerRemaining.filter((u: { count: number }) => u.count > 0);
+                    if (survivingAttakers.length > 0) {
+                        const travelTime = (movement.endTime.getTime() - movement.startTime.getTime());
+                        await tx.combatMovement.create({
+                            data: {
+                                type: 'RETURN',
+                                originCityId: movement.targetCityId,
+                                targetCityId: movement.originCityId,
+                                units: survivingAttakers as any,
+                                wood: result.lootedResources.wood,
+                                iron: result.lootedResources.iron,
+                                gold: result.lootedResources.gold,
+                                endTime: new Date(Date.now() + travelTime)
+                            }
+                        });
+                    }
+
+                    // Borrar el movimiento de ataque procesado
+                    await tx.combatMovement.delete({ where: { id: movement.id } });
+                }
+            }
+
+            // --- PROCESAR RETORNOS ---
+            for (const ret of returningMovements) {
+                // Devolver tropas a la ciudad de origen
+                const unitList = Array.isArray(ret.units)
+                    ? ret.units
+                    : Object.entries(ret.units as any).map(([type, count]) => ({ type, count: count as number }));
+
+                for (const unit of unitList) {
+                    const { type, count } = unit as { type: string, count: number };
+                    await tx.unit.upsert({
+                        where: { cityId_type: { cityId: ret.targetCityId, type } },
+                        create: { cityId: ret.targetCityId, type, count: count },
+                        update: { count: { increment: count } }
+                    });
+                }
+
+                // Devolver recursos robados al jugador
+                const city = await tx.city.findUnique({ where: { id: ret.targetCityId }, select: { playerId: true } });
+                if (city) {
+                    await tx.player.update({
+                        where: { id: city.playerId },
+                        data: {
+                            wood: { increment: ret.wood },
+                            iron: { increment: ret.iron },
+                            gold: { increment: ret.gold }
+                        }
+                    });
+                }
+
+                await tx.combatMovement.delete({ where: { id: ret.id } });
+            }
         });
 
         // Get updated player
@@ -186,7 +344,13 @@ export async function POST(request: NextRequest) {
                         buildings: true,
                         constructionQueue: true,
                         trainingQueue: true,
-                        units: true, // Now this will be clean
+                        units: true,
+                        originMovements: {
+                            include: { targetCity: true }
+                        },
+                        targetMovements: {
+                            include: { originCity: true }
+                        },
                     },
                 },
                 allianceMember: {
@@ -203,10 +367,10 @@ export async function POST(request: NextRequest) {
             buildingsCompleted: buildingUpdates.length,
         });
 
-    } catch (error) {
-        console.error('Tick error:', error);
+    } catch (error: any) {
+        console.error('Tick error detailed:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: 'Internal server error', details: error.message, stack: error.stack },
             { status: 500 }
         );
     }

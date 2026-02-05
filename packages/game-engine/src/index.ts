@@ -62,6 +62,8 @@ export interface City {
     constructionQueue: ConstructionQueueItem[];
     trainingQueue: TrainingQueueItem[];
     units?: { id: string; type: string; count: number }[];
+    originMovements?: any[]; // For now using any, can be refined
+    targetMovements?: any[];
 }
 
 /**
@@ -467,3 +469,6 @@ export { Raza, RAZAS } from '@lootsystem/races';
 
 // Exports de Unidades
 export * from './units';
+
+// Exports de Combate
+export * from './combat-engine';

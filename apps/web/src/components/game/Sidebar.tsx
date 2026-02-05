@@ -11,6 +11,7 @@ interface SidebarProps {
     race: string;
     currentView: 'city' | 'world';
     onViewChange: (view: 'city' | 'world') => void;
+    onReportsClick: () => void;
 }
 
 const RACE_IMAGES: Record<string, string> = {
@@ -20,7 +21,7 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.png',
 };
 
-export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange }: SidebarProps) {
+export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
@@ -30,7 +31,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
         { id: 'city', label: 'Ciudad', icon: '🏰', view: 'city' as const },
         { id: 'world', label: 'Mapa', icon: '🌍', view: 'world' as const },
         { id: 'messages', label: 'Mensajes', icon: '📜' },
-        { id: 'reports', label: 'Informes', icon: '📨' },
+        { id: 'reports', label: 'Informes', icon: '📨', action: onReportsClick },
         { id: 'ranking', label: 'Clasificación', icon: '🏆' },
         { id: 'profile', label: 'Perfil', icon: '👤' },
     ];
@@ -57,7 +58,10 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                     <button
                         key={item.id}
                         className={`${styles.menuItem} ${item.view && currentView === item.view ? styles.active : ''}`}
-                        onClick={() => item.view && onViewChange(item.view)}
+                        onClick={() => {
+                            if (item.view) onViewChange(item.view);
+                            if ((item as any).action) (item as any).action();
+                        }}
                     >
                         <div className={styles.menuIconFrame}>
                             <span className={styles.menuIcon}>{item.icon}</span>

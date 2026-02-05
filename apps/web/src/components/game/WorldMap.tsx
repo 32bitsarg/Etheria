@@ -190,6 +190,26 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                     setVisibleOffset(offsetRef.current);
                 }
             }}
+            onTouchStart={(e) => {
+                isDragging.current = true;
+                const touch = e.touches[0];
+                startPos.current = { x: touch.clientX - offsetRef.current.x, y: touch.clientY - offsetRef.current.y };
+                setSelectedCity(null);
+            }}
+            onTouchMove={(e) => {
+                if (!isDragging.current) return;
+                const touch = e.touches[0];
+                let nX = Math.min(0, Math.max(-(MAP_SIZE - window.innerWidth), touch.clientX - startPos.current.x));
+                let nY = Math.min(0, Math.max(-(MAP_SIZE - window.innerHeight), touch.clientY - startPos.current.y));
+                offsetRef.current = { x: nX, y: nY };
+                if (mapRef.current) mapRef.current.style.transform = `translate3d(${nX}px, ${nY}px, 0)`;
+            }}
+            onTouchEnd={() => {
+                if (isDragging.current) {
+                    isDragging.current = false;
+                    setVisibleOffset(offsetRef.current);
+                }
+            }}
         >
             <div className={styles.fogOverlay} />
             <div
@@ -267,27 +287,31 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                 ))}
             </div>
 
-            <div className={styles.coordHud}>
-                X: {Math.floor(Math.abs(visibleOffset.x))} Y: {Math.floor(Math.abs(visibleOffset.y))}
-            </div>
+            <div className={styles.mapControls}>
+                <div className={styles.coordHud}>
+                    <span>{Math.floor(Math.abs(visibleOffset.x))}</span>
+                    <span className={styles.coordSeparator}>|</span>
+                    <span>{Math.floor(Math.abs(visibleOffset.y))}</span>
+                </div>
 
-            <button className={styles.centerBtn} onClick={() => {
-                if (playerCityCoords) {
-                    const col = getCell(playerCityCoords.x);
-                    const row = getCell(playerCityCoords.y);
-                    const cellSize = 100 / GRID_COUNT;
-                    const seed = row * GRID_COUNT + col;
-                    const jitterX = (seededRandom(seed * 1.5) - 0.5) * ((80 / MAP_SIZE) * 100) * 2;
-                    const jitterY = (seededRandom(seed * 2.5) - 0.5) * ((80 / MAP_SIZE) * 100) * 2;
-                    const tX = (((col * cellSize) + (cellSize / 2) + jitterX) / 100) * MAP_SIZE;
-                    const tY = (((row * cellSize) + (cellSize / 2) + jitterY) / 100) * MAP_SIZE;
-                    const nX = Math.min(0, Math.max(-(MAP_SIZE - window.innerWidth), (window.innerWidth / 2) - tX));
-                    const nY = Math.min(0, Math.max(-(MAP_SIZE - window.innerHeight), (window.innerHeight / 2) - tY));
-                    offsetRef.current = { x: nX, y: nY };
-                    setVisibleOffset({ x: nX, y: nY });
-                    updateMapTransform();
-                }
-            }}>🏠</button>
+                <button className={styles.centerBtn} onClick={() => {
+                    if (playerCityCoords) {
+                        const col = getCell(playerCityCoords.x);
+                        const row = getCell(playerCityCoords.y);
+                        const cellSize = 100 / GRID_COUNT;
+                        const seed = row * GRID_COUNT + col;
+                        const jitterX = (seededRandom(seed * 1.5) - 0.5) * ((80 / MAP_SIZE) * 100) * 2;
+                        const jitterY = (seededRandom(seed * 2.5) - 0.5) * ((80 / MAP_SIZE) * 100) * 2;
+                        const tX = (((col * cellSize) + (cellSize / 2) + jitterX) / 100) * MAP_SIZE;
+                        const tY = (((row * cellSize) + (cellSize / 2) + jitterY) / 100) * MAP_SIZE;
+                        const nX = Math.min(0, Math.max(-(MAP_SIZE - window.innerWidth), (window.innerWidth / 2) - tX));
+                        const nY = Math.min(0, Math.max(-(MAP_SIZE - window.innerHeight), (window.innerHeight / 2) - tY));
+                        offsetRef.current = { x: nX, y: nY };
+                        setVisibleOffset({ x: nX, y: nY });
+                        updateMapTransform();
+                    }
+                }} title="Centrar en mi ciudad">🏠</button>
+            </div>
             {selectedCity && (
                 <RadialMenu
                     position={selectedCity.pos}

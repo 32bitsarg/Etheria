@@ -1,0 +1,62 @@
+.navContainer {
+    position: fixed;
+    bottom: 12px;
+    left: 4%;
+    width: 92%;
+    height: 58px;
+    background: rgba(15, 23, 42, 0.45);
+    /* Balanced glass transparency */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 200;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.2s;
+    height: 100%;
+}
+
+.navItem.active {
+    color: var(--primary);
+}
+
+.navIcon {
+    width: 24px;
+    /* Slightly smaller icons */
+    height: 24px;
+    object-fit: contain;
+    filter: grayscale(1) opacity(0.6);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.navItem.active .navIcon {
+    filter: none;
+    transform: translateY(-4px) scale(1.2);
+}
+
+.label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    opacity: 0.8;
+}
+
+.navItem.active .label {
+    opacity: 1;
+}

@@ -207,3 +207,13 @@
     background: #ef4444;
     color: #fff;
 }
+
+@media (max-width: 768px) {
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .memberItem {
+        grid-template-columns: 1fr auto;
+    }
+}

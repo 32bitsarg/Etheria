@@ -58,6 +58,8 @@ import {
 export interface City {
     id: string;
     name: string;
+    x?: number;
+    y?: number;
     buildings: BuildingState[];
     constructionQueue: ConstructionQueueItem[];
     trainingQueue: TrainingQueueItem[];

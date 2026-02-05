@@ -19,14 +19,14 @@ interface ConstructionQueueProps {
 }
 
 const BUILDING_ICONS: Record<BuildingType, string> = {
-    [BuildingType.TOWN_HALL]: '🏛️',
-    [BuildingType.FARM]: '🌾',
-    [BuildingType.LUMBER_MILL]: '🪓',
-    [BuildingType.IRON_MINE]: '⛏️',
-    [BuildingType.GOLD_MINE]: '🪙',
-    [BuildingType.WAREHOUSE]: '📦',
-    [BuildingType.BARRACKS]: '⚔️',
-    [BuildingType.ALLIANCE_CENTER]: '🏰',
+    [BuildingType.TOWN_HALL]: '/assets/buildings/townhall.png',
+    [BuildingType.FARM]: '/assets/buildings/farm.png',
+    [BuildingType.LUMBER_MILL]: '/assets/buildings/sawmill.png',
+    [BuildingType.IRON_MINE]: '/assets/buildings/ironmine.png',
+    [BuildingType.GOLD_MINE]: '/assets/buildings/goldmine.png',
+    [BuildingType.WAREHOUSE]: '/assets/buildings/warehouse.png',
+    [BuildingType.BARRACKS]: '/assets/buildings/barracks.png',
+    [BuildingType.ALLIANCE_CENTER]: '/assets/buildings/alliance.png',
 };
 
 export function ConstructionQueue({ queue, onCancel, onInstantComplete, onComplete }: ConstructionQueueProps) {
@@ -52,8 +52,8 @@ export function ConstructionQueue({ queue, onCancel, onInstantComplete, onComple
         return (
             <div className={styles.containerMinimal}>
                 <div className={styles.emptyBadge}>
-                    <span>🔨</span>
-                    <span className={styles.emptyText}>0/{MAX_CONSTRUCTION_QUEUE}</span>
+                    <img src="/assets/buildings/townhall.png" className={styles.headerIconImg} alt="Build" />
+                    <span className={`${styles.emptyText} queue-text-stable`}>0/{MAX_CONSTRUCTION_QUEUE}</span>
                 </div>
             </div>
         );
@@ -63,8 +63,8 @@ export function ConstructionQueue({ queue, onCancel, onInstantComplete, onComple
         <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed}`}>
             {/* Header - Always visible */}
             <div className={styles.header} onClick={() => setIsExpanded(!isExpanded)}>
-                <span className={styles.headerIcon}>🔨</span>
-                <span className={styles.queueCount}>{queue.length}/{MAX_CONSTRUCTION_QUEUE}</span>
+                <img src="/assets/buildings/townhall.png" className={styles.headerIconImg} alt="Build" />
+                <span className={`${styles.queueCount} queue-text-stable`}>{queue.length}/{MAX_CONSTRUCTION_QUEUE}</span>
                 <span className={styles.expandIcon}>{isExpanded ? '▼' : '◀'}</span>
             </div>
 
@@ -84,7 +84,7 @@ export function ConstructionQueue({ queue, onCancel, onInstantComplete, onComple
                         return (
                             <div key={item.id} className={`${styles.item} ${isActive ? styles.active : ''}`}>
                                 <div className={styles.itemRow}>
-                                    <span className={styles.itemIcon}>{BUILDING_ICONS[item.buildingType]}</span>
+                                    <img src={BUILDING_ICONS[item.buildingType]} className={styles.itemIconImg} alt="Icon" />
                                     <div className={styles.itemInfo}>
                                         <span className={styles.itemName}>{info.name}</span>
                                         <span className={styles.itemLevel}>Nv.{item.targetLevel}</span>

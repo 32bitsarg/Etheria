@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getUnitCost, UnitType, MAX_TRAINING_QUEUE } from '@lootsystem/game-engine';
+import { getUnitCost, UnitType, MAX_TRAINING_QUEUE, getUnitTrainingTime } from '@lootsystem/game-engine';
 import { getAuthPlayer } from '@/lib/player-utils';
 
 export async function POST(request: NextRequest) {
@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
         if (count <= 0) return NextResponse.json({ error: 'Invalid count' }, { status: 400 });
 
         const cost = getUnitCost(unitType as UnitType);
+        const unitTrainingTime = getUnitTrainingTime(unitType as UnitType);
         const totalWood = (cost.wood || 0) * count;
         const totalIron = (cost.iron || 0) * count;
         const totalGold = (cost.gold || 0) * count;
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Insufficient population' }, { status: 400 });
         }
 
-        const trainingTime = (cost.trainingTime || 60) * count;
+        const trainingTime = (unitTrainingTime || 60) * count;
         const endTime = new Date(Date.now() + trainingTime * 1000);
 
         const updated = await prisma.$transaction(async (tx) => {

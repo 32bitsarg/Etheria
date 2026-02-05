@@ -231,8 +231,8 @@ export function GameDashboard() {
 
                 <div className={styles.queuesContainer}>
                     <CombatMovements
-                        originMovements={(player.city as any).originMovements || []}
-                        targetMovements={(player.city as any).targetMovements || []}
+                        originMovements={player.city.originMovements || []}
+                        targetMovements={player.city.targetMovements || []}
                         onArrival={syncWithServer}
                     />
 
@@ -264,9 +264,9 @@ export function GameDashboard() {
                     />
                 ) : (
                     <WorldMap
-                        playerCityCoords={{ x: (player.city as any).x || 0, y: (player.city as any).y || 0 }}
+                        playerCityCoords={{ x: player.city.x || 0, y: player.city.y || 0 }}
                         currentPlayerId={userId || undefined}
-                        availableUnits={(player.city as any).units || []}
+                        availableUnits={player.city.units || []}
                         onViewProfile={handleOpenProfile}
                     />
                 )}

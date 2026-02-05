@@ -140,6 +140,42 @@
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.logoutBtn {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 6px 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    font-weight: 800;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.logoutBtn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+.logoutIcon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(29%) sepia(80%) (66%) saturate(2811%) hue-rotate(342deg) brightness(98%) contrast(93%);
+    /* Matches #ef4444 approximately */
+}
+
+.logoutBtn:hover .logoutIcon {
+    filter: brightness(0) invert(1);
+    /* Turns white on hover */
+}
+
 /* Cuerpo */
 .content {
     padding: 16px 24px;
@@ -338,4 +374,31 @@
 .time {
     color: #78716c;
     font-size: 0.8rem;
+}
+
+@media (max-width: 900px) {
+    .overlay {
+        padding: 0.5rem !important;
+        background: rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: var(--glass-blur) !important;
+        -webkit-backdrop-filter: var(--glass-blur) !important;
+    }
+
+    .modal {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 85vh !important;
+        background: var(--glass-bg) !important;
+        backdrop-filter: var(--glass-blur) !important;
+        -webkit-backdrop-filter: var(--glass-blur) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 24px !important;
+        box-shadow: var(--glass-shadow) !important;
+        padding-bottom: 80px !important;
+    }
+
+    .header {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
 }

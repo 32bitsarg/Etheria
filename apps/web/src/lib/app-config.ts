@@ -13,7 +13,7 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.0.9',
+    version: '0.1.0',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
@@ -32,6 +32,54 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.1.0',
+        date: '2026-02-05',
+        title: 'Alpha Milestone: Mobile Conquest & Battle Systems',
+        type: 'major',
+        changes: [
+            {
+                category: 'feature',
+                description: 'Lanzamiento Alpha Imperial: Mobile Dashboard optimizado con navegación táctil nativa y layout especializado para guerreros en movimiento.',
+            },
+            {
+                category: 'feature',
+                description: 'Sistema de Batallas: Implementado motor de combate, informes de batalla y movimientos de tropas en tiempo real.',
+            },
+            {
+                category: 'ui',
+                description: 'Diseño Glassmorphism: Nuevo sistema estético de cristales para modales móviles, garantizando una experiencia premium y moderna.',
+            },
+            {
+                category: 'feature',
+                description: 'Navegación Táctica: Soporte nativo para "Drag & Pan" en el Mapamundi y centrado automático en la ubicación real del jugador.',
+            },
+            {
+                category: 'performance',
+                description: 'Unificación de Reinos: Nuevo breakpoint de 900px para una compatibilidad perfecta entre Tablets, Móviles y Desktop.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Resuelto error crítico de "Training Queue" y sincronización de tiempos de entrenamiento en el motor de juego.',
+            },
+            {
+                category: 'feature',
+                description: 'Control de Capacidad: Implementado sistema de gestión de islas por tamaño para evitar el hacinamiento de aldeas.',
+            },
+            {
+                category: 'ui',
+                description: 'Reubicación y rediseño de controles de mapa (Coordenadas y Centrado) con estética Glassmorphism en la esquina superior.',
+            },
+            {
+                category: 'feature',
+                description: 'Ajustes del Reino: Nuevo panel de configuración móvil con gestión de audio y sistema de salida centralizado.',
+            },
+            {
+                category: 'performance',
+                description: 'Sincronización de Audio: Implementada música ambiente en móvil con control de volumen reactivo en tiempo real.',
+            },
+        ],
+    },
     {
         version: '0.0.9',
         date: '2026-02-05',

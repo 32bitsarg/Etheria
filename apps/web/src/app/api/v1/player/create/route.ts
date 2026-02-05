@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
         const player = await prisma.player.create({
             data: {
-                userId, race, wood: 500, iron: 300, gold: 200, populationUsed: 0, populationMax: 200,
+                userId, race, wood: 1000, iron: 1000, gold: 1000, populationUsed: 0, populationMax: 200,
                 city: {
                     create: {
                         name: cityName.trim(), x, y,

@@ -12,14 +12,14 @@ interface CityMapProps {
 
 // Layout con posiciones absolutas (%) para coincidir con el fondo
 const BUILDING_LAYOUT: { type: BuildingType; x: string; y: string; size: 'large' | 'medium' | 'small' }[] = [
-    { type: BuildingType.TOWN_HALL, x: '45%', y: '42%', size: 'large' },
-    { type: BuildingType.FARM, x: '35%', y: '30%', size: 'medium' },
-    { type: BuildingType.LUMBER_MILL, x: '60%', y: '30%', size: 'medium' },
-    { type: BuildingType.IRON_MINE, x: '22%', y: '68%', size: 'medium' },
-    { type: BuildingType.GOLD_MINE, x: '72%', y: '72%', size: 'medium' },
-    { type: BuildingType.WAREHOUSE, x: '78%', y: '38%', size: 'small' },
-    { type: BuildingType.BARRACKS, x: '22%', y: '42%', size: 'medium' },
-    { type: BuildingType.ALLIANCE_CENTER, x: '78%', y: '60%', size: 'small' },
+    { type: BuildingType.TOWN_HALL, x: '45%', y: '29%', size: 'large' },
+    { type: BuildingType.FARM, x: '45%', y: '60%', size: 'medium' },
+    { type: BuildingType.LUMBER_MILL, x: '15%', y: '60%', size: 'medium' },
+    { type: BuildingType.IRON_MINE, x: '22%', y: '28%', size: 'medium' },
+    { type: BuildingType.GOLD_MINE, x: '32%', y: '18%', size: 'medium' },
+    { type: BuildingType.WAREHOUSE, x: '55%', y: '29%', size: 'small' },
+    { type: BuildingType.BARRACKS, x: '55%', y: '50%', size: 'medium' },
+    { type: BuildingType.ALLIANCE_CENTER, x: '40%', y: '45%', size: 'small' },
 ];
 
 const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -40,6 +40,8 @@ const BUILDING_SPRITES: Partial<Record<BuildingType, string>> = {
     [BuildingType.LUMBER_MILL]: '/assets/buildings/sawmill.png',
     [BuildingType.WAREHOUSE]: '/assets/buildings/warehouse.png',
     [BuildingType.ALLIANCE_CENTER]: '/assets/buildings/alliance.png',
+    [BuildingType.IRON_MINE]: '/assets/buildings/ironmine.png',
+    [BuildingType.GOLD_MINE]: '/assets/buildings/goldmine.png',
 };
 
 

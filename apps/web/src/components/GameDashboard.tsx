@@ -18,6 +18,7 @@ import { ReportsPanel } from '@/components/game/ReportsPanel';
 import { CombatMovements } from '@/components/game/CombatMovements';
 import { MessagesPanel } from '@/components/game/MessagesPanel';
 import { ProfilePanel } from '@/components/game/ProfilePanel';
+import { RankingPanel } from '@/components/game/RankingPanel';
 import {
     processTick,
     calculateProductionRates,
@@ -46,6 +47,7 @@ export function GameDashboard() {
     const [showReportsPanel, setShowReportsPanel] = useState(false);
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
     const [showProfilePanel, setShowProfilePanel] = useState(false);
+    const [showRankingPanel, setShowRankingPanel] = useState(false);
     const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
     const [view, setView] = useState<'city' | 'world'>('city');
 
@@ -321,9 +323,20 @@ export function GameDashboard() {
                 onViewChange={setView}
                 onReportsClick={() => setShowReportsPanel(true)}
                 onMessagesClick={() => setShowMessagesPanel(true)}
+                onRankingClick={() => setShowRankingPanel(true)}
                 onProfileClick={() => handleOpenProfile()}
                 level={player.level || 1}
             />
+
+            {showRankingPanel && (
+                <RankingPanel
+                    onClose={() => setShowRankingPanel(false)}
+                    onPlayerClick={(targetId) => {
+                        setProfilePlayerId(targetId);
+                        setShowProfilePanel(true);
+                    }}
+                />
+            )}
 
             {/* Background Music */}
             <MusicPlayer

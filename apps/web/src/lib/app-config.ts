@@ -13,7 +13,7 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.0.7',
+    version: '0.0.8',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
@@ -32,6 +32,38 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.0.8',
+        date: '2026-02-05',
+        title: 'Ranking System & Player Profiles',
+        type: 'minor',
+        changes: [
+            {
+                category: 'feature',
+                description: 'Sistema de Clasificación Global: Compite por el primer puesto en un ranking basado en tu Poder Militar real.',
+            },
+            {
+                category: 'feature',
+                description: 'Perfiles de Jugador Extendidos: Ahora puedes ver las estadísticas detalladas, biografía y historial de batallas de cualquier guerrero.',
+            },
+            {
+                category: 'ui',
+                description: 'Diseño de Pergamino: Implementada biografía con estilo medieval auténtico y maquetación de perfil mejorada.',
+            },
+            {
+                category: 'feature',
+                description: 'Integración Social: Acceso directo a perfiles desde el Mapamundi y la tabla de Clasificación.',
+            },
+            {
+                category: 'performance',
+                description: 'Poder Militar Persistente: Optimización del servidor para cálculos de ranking instantáneos sin latencia.',
+            },
+            {
+                category: 'ui',
+                description: 'Notificaciones de Nivel: Alertas visuales inmediatas cuando alcanzas un nuevo rango de experiencia.',
+            },
+        ],
+    },
     {
         version: '0.0.7',
         date: '2026-02-04',

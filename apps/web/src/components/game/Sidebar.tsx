@@ -13,6 +13,7 @@ interface SidebarProps {
     onViewChange: (view: 'city' | 'world') => void;
     onReportsClick: () => void;
     onMessagesClick: () => void;
+    onRankingClick: () => void;
     onProfileClick: () => void;
     level: number;
 }
@@ -24,7 +25,7 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.png',
 };
 
-export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onProfileClick, level }: SidebarProps) {
+export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
@@ -35,7 +36,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
         { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.png', view: 'world' as const },
         { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.png', action: onMessagesClick },
         { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.png', action: onReportsClick },
-        { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.png' },
+        { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.png', action: onRankingClick },
         { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.png', action: onProfileClick },
     ];
 

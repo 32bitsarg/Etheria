@@ -53,11 +53,10 @@ export function AttackPanel({ targetCity, availableUnits, onClose, onAttackStart
                 Object.entries(selectedUnits).filter(([_, count]) => count > 0)
             );
 
-            const res = await fetch('/api/combat/attack', {
+            const res = await fetch('/api/v1/combat/attack', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    attackerPlayerId,
                     targetCityId: targetCity.id,
                     units: unitsToSend
                 })

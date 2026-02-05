@@ -13,7 +13,7 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.0.8',
+    version: '0.0.9',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
@@ -32,6 +32,38 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.0.9',
+        date: '2026-02-05',
+        title: 'Security Hardening & v1 API Migration',
+        type: 'major',
+        changes: [
+            {
+                category: 'feature',
+                description: 'Seguridad de Nivel Imperial: Implementado sistema de autenticación JWT con Cookies HTTP-Only para una protección total.',
+            },
+            {
+                category: 'feature',
+                description: 'Migración a v1 API: Todos los endpoints del reino han sido actualizados a la versión 1, garantizando estabilidad y estándares modernos.',
+            },
+            {
+                category: 'ui',
+                description: 'Nueva Ruta Real: El juego ahora reside bajo la URL /play, con redirecciones automáticas para asegurar el flujo de los guerreros.',
+            },
+            {
+                category: 'performance',
+                description: 'Procesamiento Atómico: El motor del juego ahora utiliza transacciones de base de datos para asegurar que los recursos y unidades se acrediten sin errores.',
+            },
+            {
+                category: 'performance',
+                description: 'Optimización de Consultas: Añadidos índices de alto rendimiento en la base de datos para acelerar el ranking y la resolución de colas.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Eliminados todos los placeholders y rutas temporales, consolidando una base de código totalmente integrada y lista para la batalla.',
+            },
+        ],
+    },
     {
         version: '0.0.8',
         date: '2026-02-05',

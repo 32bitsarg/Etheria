@@ -34,9 +34,9 @@ export default function LoginPage() {
     useEffect(() => {
         if (isLoggedIn) {
             if (needsRaceSelection) {
-                router.push('/game?step=race');
+                router.push('/play?step=race');
             } else {
-                router.push('/game');
+                router.push('/play');
             }
         }
     }, [isLoggedIn, needsRaceSelection, router]);

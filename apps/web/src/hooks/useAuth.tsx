@@ -45,28 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error: null,
     });
 
-    const STORAGE_KEY_ID = 'lootsystem_userid';
-    const STORAGE_KEY_USER = 'lootsystem_username';
-
     const { addToast } = useToast();
-
-    // Helper para guardar sesión
-    const saveSession = (userId: string, username: string, remember: boolean) => {
-        if (typeof window === 'undefined') return;
-        const storage = remember ? localStorage : sessionStorage;
-        storage.setItem(STORAGE_KEY_ID, userId);
-        storage.setItem(STORAGE_KEY_USER, username);
-        (remember ? sessionStorage : localStorage).removeItem(STORAGE_KEY_ID);
-        (remember ? sessionStorage : localStorage).removeItem(STORAGE_KEY_USER);
-    };
-
-    const clearSession = () => {
-        if (typeof window === 'undefined') return;
-        localStorage.removeItem(STORAGE_KEY_ID);
-        localStorage.removeItem(STORAGE_KEY_USER);
-        sessionStorage.removeItem(STORAGE_KEY_ID);
-        sessionStorage.removeItem(STORAGE_KEY_USER);
-    };
 
     const mapApiToState = (apiData: any): PlayerState => {
         const { player, user } = apiData;
@@ -116,10 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
             level: p.level || 1,
             experience: p.experience || 0,
+            militaryPower: p.militaryPower || 0,
             lastTick: new Date(p.lastResourceUpdate).getTime(),
             createdAt: new Date(p.createdAt).getTime(),
             alliance: p.allianceMember || null
-        };
+        } as any;
     };
 
     const updatePlayer = useCallback((player: PlayerState) => {
@@ -127,12 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const syncWithServer = useCallback(async () => {
-        if (!state.userId || !state.player?.id) return;
+        if (!state.isLoggedIn) return;
         try {
-            const res = await fetch('/api/player/tick', {
+            const res = await fetch('/api/v1/player/tick', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id })
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (res.ok) {
@@ -141,39 +120,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const updatedPlayer = mapApiToState(data);
                     setState(prev => ({ ...prev, player: updatedPlayer }));
                 }
+            } else if (res.status === 401) {
+                setState(prev => ({ ...prev, isLoggedIn: false }));
             }
         } catch (error) {
             console.error('Error syncing:', error);
         }
-    }, [state.userId, state.player?.id]);
+    }, [state.isLoggedIn]);
 
     useEffect(() => {
         const initAuth = async () => {
-            const userId = localStorage.getItem(STORAGE_KEY_ID) || sessionStorage.getItem(STORAGE_KEY_ID);
-            if (!userId) {
-                setState(prev => ({ ...prev, loading: false }));
-                return;
-            }
-
             try {
-                const res = await fetch('/api/auth/session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId })
+                const res = await fetch('/api/v1/auth/session', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
                 if (res.ok) {
                     const data = await res.json();
                     if (data.needsRaceSelection) {
-                        setState({ isLoggedIn: true, needsRaceSelection: true, player: null, userId: userId, loading: false, error: null });
+                        setState({ isLoggedIn: true, needsRaceSelection: true, player: null, userId: data.user.id, loading: false, error: null });
                     } else if (data.player) {
-                        setState({ isLoggedIn: true, needsRaceSelection: false, player: mapApiToState(data), userId: userId, loading: false, error: null });
+                        setState({ isLoggedIn: true, needsRaceSelection: false, player: mapApiToState(data), userId: data.user.id, loading: false, error: null });
                     }
                 } else {
-                    throw new Error('Session invalid');
+                    setState(prev => ({ ...prev, loading: false, isLoggedIn: false }));
                 }
             } catch (error) {
-                clearSession();
                 setState(prev => ({ ...prev, loading: false, isLoggedIn: false }));
             }
         };
@@ -189,7 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = async (username: string, password?: string, rememberMe: boolean = false) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
         try {
-            const res = await fetch('/api/auth/login', {
+            const res = await fetch('/api/v1/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -197,7 +170,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Login failed');
 
-            saveSession(data.user.id, username, rememberMe);
             if (data.needsRaceSelection) {
                 setState({ isLoggedIn: true, needsRaceSelection: true, player: null, userId: data.user.id, loading: false, error: null });
             } else {
@@ -213,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const register = async (username: string, password?: string, email?: string) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
         try {
-            const res = await fetch('/api/auth/register', {
+            const res = await fetch('/api/v1/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password, email })
@@ -221,7 +193,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Register failed');
 
-            saveSession(data.user.id, username, false);
             setState({ isLoggedIn: true, needsRaceSelection: true, player: null, userId: data.user.id, loading: false, error: null });
             addToast('Registro exitoso', 'success');
         } catch (error: any) {
@@ -231,13 +202,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const selectRace = async (race: Raza, cityName: string) => {
-        if (!state.userId) return;
         setState(prev => ({ ...prev, loading: true, error: null }));
         try {
-            const res = await fetch('/api/player/create', {
+            const res = await fetch('/api/v1/player/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: state.userId, race, cityName })
+                body: JSON.stringify({ race, cityName })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Race selection failed');
@@ -250,18 +220,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const logout = () => {
-        clearSession();
+    const logout = async () => {
+        await fetch('/api/v1/auth/logout', { method: 'POST' });
         setState({ isLoggedIn: false, needsRaceSelection: false, player: null, userId: null, loading: false, error: null });
     };
 
     const upgradeBuilding = async (buildingType: BuildingType): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/buildings/upgrade', {
+            const res = await fetch('/api/v1/buildings/upgrade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, buildingType })
+                body: JSON.stringify({ buildingType })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Upgrade failed');
@@ -275,12 +244,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const instantCompleteBuilding = async (queueItemId: string): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/buildings/instant-complete', {
+            const res = await fetch('/api/v1/buildings/instant-complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, queueItemId })
+                body: JSON.stringify({ queueItemId })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Instant complete failed');
@@ -294,12 +262,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const cancelBuildingUpgrade = async (queueItemId: string): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/buildings/cancel', {
+            const res = await fetch('/api/v1/buildings/cancel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, queueItemId })
+                body: JSON.stringify({ queueItemId })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Cancel failed');
@@ -313,12 +280,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const trainUnits = async (unitType: string, count: number): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/military/train', {
+            const res = await fetch('/api/v1/military/train', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, unitType, count })
+                body: JSON.stringify({ unitType, count })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Training failed');
@@ -332,12 +298,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const cancelTraining = async (queueItemId: string): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/military/cancel', {
+            const res = await fetch('/api/v1/military/cancel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, queueItemId })
+                body: JSON.stringify({ queueItemId })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Cancel training failed');
@@ -351,12 +316,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const finishTraining = async (queueItemId: string): Promise<boolean> => {
-        if (!state.player?.id) return false;
         try {
-            const res = await fetch('/api/military/finish', {
+            const res = await fetch('/api/v1/military/finish', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: state.player.id, queueId: queueItemId })
+                body: JSON.stringify({ queueId: queueItemId })
             });
             if (!res.ok) throw new Error('Finish training failed');
             await syncWithServer();

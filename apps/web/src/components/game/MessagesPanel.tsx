@@ -38,7 +38,7 @@ export function MessagesPanel({ playerId, onClose }: MessagesPanelProps) {
     const fetchMessages = async (folder: 'inbox' | 'sent') => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/messages?playerId=${playerId}&folder=${folder}`);
+            const res = await fetch(`/api/v1/messages?folder=${folder}`);
             const data = await res.json();
             if (data.success) {
                 setMessages(data.messages);
@@ -62,7 +62,7 @@ export function MessagesPanel({ playerId, onClose }: MessagesPanelProps) {
 
         if (!message.read && message.recipientId === playerId) {
             try {
-                await fetch(`/api/messages/${message.id}`, {
+                await fetch(`/api/v1/messages/${message.id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ read: true })
@@ -80,7 +80,7 @@ export function MessagesPanel({ playerId, onClose }: MessagesPanelProps) {
         if (!confirm('¿Estás seguro de que quieres borrar este mensaje?')) return;
 
         try {
-            const res = await fetch(`/api/messages/${id}?playerId=${playerId}`, {
+            const res = await fetch(`/api/v1/messages/${id}`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -100,11 +100,10 @@ export function MessagesPanel({ playerId, onClose }: MessagesPanelProps) {
         setError(null);
 
         try {
-            const res = await fetch('/api/messages', {
+            const res = await fetch('/api/v1/messages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    senderId: playerId,
                     recipientName: to,
                     subject,
                     content

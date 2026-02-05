@@ -25,7 +25,7 @@ export function AlliancePanel() {
     const fetchAllianceDetails = async (id: string) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/alliance/${id}`);
+            const res = await fetch(`/api/v1/alliance/${id}`);
             const data = await res.json();
             if (res.ok) setViewAlliance(data);
         } catch (error) {
@@ -38,7 +38,7 @@ export function AlliancePanel() {
     const fetchAllianceList = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/alliance/list');
+            const res = await fetch('/api/v1/alliance/list');
             const data = await res.json();
             if (res.ok) setAllianceList(data);
         } catch (error) {
@@ -52,13 +52,12 @@ export function AlliancePanel() {
         if (!player) return;
         setLoading(true);
         try {
-            const res = await fetch('/api/alliance/create', {
+            const res = await fetch('/api/v1/alliance/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: createForm.name,
-                    tag: createForm.tag,
-                    playerId: player.id
+                    tag: createForm.tag
                 })
             });
 
@@ -79,12 +78,11 @@ export function AlliancePanel() {
         if (!player) return;
         setLoading(true);
         try {
-            const res = await fetch('/api/alliance/join', {
+            const res = await fetch('/api/v1/alliance/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    allianceId,
-                    playerId: player.id
+                    allianceId
                 })
             });
 
@@ -107,10 +105,9 @@ export function AlliancePanel() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/alliance/leave', {
+            const res = await fetch('/api/v1/alliance/leave', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: player.id })
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (res.ok) {
@@ -133,10 +130,9 @@ export function AlliancePanel() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/alliance/dissolve', {
+            const res = await fetch('/api/v1/alliance/dissolve', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: player.id })
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (res.ok) {

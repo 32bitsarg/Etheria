@@ -10,7 +10,7 @@ export function useEvents(playerId: string | undefined, onSync: () => void) {
         if (!playerId) return;
 
         // Conectar al endpoint de SSE
-        const eventSource = new EventSource('/api/events');
+        const eventSource = new EventSource('/api/v1/events');
 
         eventSource.onmessage = (event) => {
             try {

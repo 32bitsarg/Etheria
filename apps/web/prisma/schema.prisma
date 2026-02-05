@@ -39,6 +39,8 @@ model Player {
   receivedMessages   Message[]       @relation("ReceivedMessages")
   sentMessages       Message[]       @relation("SentMessages")
   user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([militaryPower])
 }
 
 model Alliance {
@@ -98,6 +100,8 @@ model ConstructionQueueItem {
   cityId       String
   createdAt    DateTime @default(now())
   city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@index([endTime])
 }
 
 model Unit {
@@ -118,7 +122,9 @@ model TrainingQueueItem {
   endTime   DateTime
   cityId    String
   createdAt DateTime @default(now())
-  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@index([endTime])
 }
 
 model CombatMovement {
@@ -135,6 +141,8 @@ model CombatMovement {
   createdAt    DateTime @default(now())
   originCity   City     @relation("OriginMovements", fields: [originCityId], references: [id])
   targetCity   City     @relation("TargetMovements", fields: [targetCityId], references: [id])
+
+  @@index([endTime])
 }
 
 model CombatReport {

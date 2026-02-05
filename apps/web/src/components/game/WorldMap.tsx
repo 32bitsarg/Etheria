@@ -80,7 +80,7 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
     useEffect(() => {
         const fetchMap = async () => {
             try {
-                const res = await fetch('/api/world/map');
+                const res = await fetch('/api/v1/world/map');
                 const data = await res.json();
                 if (data.success) {
                     setCities(data.cities);

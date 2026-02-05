@@ -37,7 +37,7 @@ export function ReportsPanel({ playerId, onClose }: ReportsPanelProps) {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const res = await fetch(`/api/player/reports?playerId=${playerId}`);
+                const res = await fetch('/api/v1/player/reports');
                 const data = await res.json();
                 if (data.success) {
                     setReports(data.reports);

@@ -193,7 +193,7 @@ export function GameDashboard() {
                     <button
                         className={styles.menuBtn}
                         onClick={async () => {
-                            const res = await fetch('/api/admin/grant-resources', {
+                            const res = await fetch('/api/v1/admin/grant-resources', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({

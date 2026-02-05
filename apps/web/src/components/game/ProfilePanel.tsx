@@ -53,7 +53,7 @@ export function ProfilePanel({ playerId, onClose, isOwnProfile = true }: Profile
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`/api/player/profile?playerId=${playerId}`);
+            const res = await fetch(`/api/v1/player/profile?playerId=${playerId}`);
             const data = await res.json();
             if (data.success) {
                 setProfile(data.profile);
@@ -68,7 +68,7 @@ export function ProfilePanel({ playerId, onClose, isOwnProfile = true }: Profile
 
     const handleSaveBio = async () => {
         try {
-            const res = await fetch('/api/player/profile', {
+            const res = await fetch('/api/v1/player/profile', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId, bio: tempBio }),

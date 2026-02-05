@@ -99,6 +99,7 @@ export interface PlayerState {
     lastTick: number; // timestamp del último tick de producción
     level: number;
     experience: number;
+    militaryPower: number;
     createdAt: number;
     alliance?: AllianceMember | null;
 }
@@ -127,6 +128,7 @@ export function createPlayerState(username: string, race: Raza, cityName: string
         lastTick: now,
         level: 1,
         experience: 0,
+        militaryPower: 0,
         createdAt: now,
     };
 }

@@ -37,7 +37,7 @@ export function RankingPanel({ onClose, onPlayerClick }: RankingPanelProps) {
     const fetchRanking = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/ranking');
+            const res = await fetch('/api/v1/ranking');
             const data = await res.json();
             if (data.success) {
                 setRanking(data.ranking);

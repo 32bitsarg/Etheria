@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
                         buildings: true,
                         constructionQueue: true,
                         trainingQueue: true,
+                        units: true,
                     },
                 },
             },
@@ -160,6 +161,31 @@ export async function POST(request: NextRequest) {
             xpGained += (count as any) * popMultiplier * 2;
         }
 
+        // --- Recalculate Military Power ---
+        let totalMilitaryPower = 0;
+        const currentUnitsMap: Record<string, number> = {};
+
+        // Add existing units
+        if ((player.city as any)?.units) {
+            for (const unit of (player.city as any).units) {
+                currentUnitsMap[unit.type] = unit.count;
+            }
+        }
+
+        // Apply updates from this tick
+        for (const [type, count] of Object.entries(unitUpdates)) {
+            currentUnitsMap[type] = (currentUnitsMap[type] || 0) + count;
+        }
+
+        // Calculate power
+        for (const [type, count] of Object.entries(currentUnitsMap)) {
+            const stats = UNIT_STATS[type as UnitType]?.stats;
+            if (stats) {
+                totalMilitaryPower += count * (stats.attack + stats.defense);
+            }
+        }
+        totalMilitaryPower = Math.floor(totalMilitaryPower / 10);
+
         // Handle Level Up Logic
         let currentLevel = (player as any).level || 1;
         let currentXP = ((player as any).experience || 0) + xpGained;
@@ -182,6 +208,7 @@ export async function POST(request: NextRequest) {
                     gold: newGold,
                     experience: currentXP,
                     level: currentLevel,
+                    militaryPower: totalMilitaryPower,
                     lastResourceUpdate: now,
                 },
             });

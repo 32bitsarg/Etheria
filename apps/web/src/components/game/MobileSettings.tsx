@@ -1,16 +1,18 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useMusicVolume } from '@/components/game/MusicPlayer';
+import { useVolume } from '@/hooks/useVolume';
 import styles from './MobileSettings.module.css';
 
 interface MobileSettingsProps {
     onClose: () => void;
-    volume: number;
-    onVolumeChange: (v: number) => void;
+    musicVolume: number;
+    sfxVolume: number;
+    onMusicVolumeChange: (v: number) => void;
+    onSfxVolumeChange: (v: number) => void;
 }
 
-export function MobileSettings({ onClose, volume, onVolumeChange }: MobileSettingsProps) {
+export function MobileSettings({ onClose, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange }: MobileSettingsProps) {
     const { logout } = useAuth();
 
     return (
@@ -28,16 +30,36 @@ export function MobileSettings({ onClose, volume, onVolumeChange }: MobileSettin
                         <div className={styles.settingRow}>
                             <div className={styles.volumeHeader}>
                                 <span className={styles.volumeIcon}>
-                                    {volume === 0 ? '🔇' : volume < 0.5 ? '🔈' : '🔊'}
+                                    {musicVolume === 0 ? '🔇' : musicVolume < 0.5 ? '🔈' : '🔊'}
                                 </span>
-                                <span className={styles.volumePercent}>{Math.round(volume * 100)}%</span>
+                                <span className={styles.volumePercent}>{Math.round(musicVolume * 100)}%</span>
                             </div>
                             <input
                                 type="range"
                                 min="0"
                                 max="100"
-                                value={volume * 100}
-                                onChange={(e) => onVolumeChange(parseInt(e.target.value) / 100)}
+                                value={musicVolume * 100}
+                                onChange={(e) => onMusicVolumeChange(parseInt(e.target.value) / 100)}
+                                className={styles.volumeSlider}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Efectos de Sonido</h3>
+                        <div className={styles.settingRow}>
+                            <div className={styles.volumeHeader}>
+                                <span className={styles.volumeIcon}>
+                                    {sfxVolume === 0 ? '🔇' : sfxVolume < 0.5 ? '🔈' : '🔊'}
+                                </span>
+                                <span className={styles.volumePercent}>{Math.round(sfxVolume * 100)}%</span>
+                            </div>
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={sfxVolume * 100}
+                                onChange={(e) => onSfxVolumeChange(parseInt(e.target.value) / 100)}
                                 className={styles.volumeSlider}
                             />
                         </div>

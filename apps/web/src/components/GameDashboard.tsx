@@ -10,7 +10,8 @@ import { BuildingPanel } from '@/components/game/BuildingPanel';
 import { ConstructionQueue } from '@/components/game/ConstructionQueue';
 import { GlobalChat } from '@/components/game/GlobalChat';
 import { AnimatedResource } from '@/components/game/AnimatedResource';
-import { MusicPlayer, useMusicVolume } from '@/components/game/MusicPlayer';
+import { MusicPlayer } from '@/components/game/MusicPlayer';
+import { useVolume } from '@/hooks/useVolume';
 import { Sidebar } from '@/components/game/Sidebar';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { UnitsDisplay } from '@/components/game/UnitsDisplay';
@@ -52,7 +53,7 @@ export function GameDashboard() {
     const [view, setView] = useState<'city' | 'world'>('city');
 
     // Música y eventos
-    const { volume, setVolume } = useMusicVolume();
+    const { musicVolume, sfxVolume, setMusicVolume, setSfxVolume } = useVolume();
     useEvents(player?.id, syncWithServer);
 
     // Actualizar recursos cada segundo
@@ -315,8 +316,10 @@ export function GameDashboard() {
             {/* Sidebar with Settings and Logout */}
             <Sidebar
                 onLogout={logout}
-                musicVolume={volume}
-                onVolumeChange={setVolume}
+                musicVolume={musicVolume}
+                sfxVolume={sfxVolume}
+                onMusicVolumeChange={setMusicVolume}
+                onSfxVolumeChange={setSfxVolume}
                 city={player.city.name}
                 race={race?.nombre || player.race}
                 currentView={view}
@@ -341,7 +344,6 @@ export function GameDashboard() {
             {/* Background Music */}
             <MusicPlayer
                 src="/assets/sounds/music/villge.mp3"
-                volume={volume}
             />
         </div>
     );

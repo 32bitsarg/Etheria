@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useVolume } from '@/hooks/useVolume';
 
 interface MusicPlayerProps {
     src: string;
-    volume: number;
     autoPlay?: boolean;
 }
 
-export function MusicPlayer({ src, volume, autoPlay = true }: MusicPlayerProps) {
+export function MusicPlayer({ src, autoPlay = true }: MusicPlayerProps) {
+    const { musicVolume } = useVolume();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -19,7 +20,7 @@ export function MusicPlayer({ src, volume, autoPlay = true }: MusicPlayerProps) 
             audioRef.current.loop = true;
         }
 
-        audioRef.current.volume = Math.max(0, Math.min(1, volume));
+        audioRef.current.volume = musicVolume;
 
         return () => {
             if (audioRef.current) {
@@ -32,9 +33,9 @@ export function MusicPlayer({ src, volume, autoPlay = true }: MusicPlayerProps) 
     // Update volume
     useEffect(() => {
         if (audioRef.current) {
-            audioRef.current.volume = Math.max(0, Math.min(1, volume));
+            audioRef.current.volume = musicVolume;
         }
-    }, [volume]);
+    }, [musicVolume]);
 
     // AutoPlay logic
     useEffect(() => {
@@ -80,8 +81,6 @@ export function MusicPlayer({ src, volume, autoPlay = true }: MusicPlayerProps) 
             if (document.hidden) {
                 console.log("Tab hidden - Pausing music");
                 audioRef.current.pause();
-                // We DON'T update isPlaying to false here to remember 
-                // that we were playing (or trying to) when we come back.
             } else {
                 console.log("Tab visible - Resuming if autoPlay");
                 if (autoPlay) {
@@ -100,25 +99,4 @@ export function MusicPlayer({ src, volume, autoPlay = true }: MusicPlayerProps) 
     }, [autoPlay]);
 
     return null;
-}
-
-// Hook for music control
-export function useMusicVolume() {
-    const [volume, setVolume] = useState(0.3); // Default 30%
-
-    useEffect(() => {
-        // Load from localStorage
-        const saved = localStorage.getItem('musicVolume');
-        if (saved !== null) {
-            setVolume(parseFloat(saved));
-        }
-    }, []);
-
-    const updateVolume = (newVolume: number) => {
-        const clamped = Math.max(0, Math.min(1, newVolume));
-        setVolume(clamped);
-        localStorage.setItem('musicVolume', clamped.toString());
-    };
-
-    return { volume, setVolume: updateVolume };
 }

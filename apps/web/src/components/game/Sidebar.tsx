@@ -6,7 +6,9 @@ import styles from './Sidebar.module.css';
 interface SidebarProps {
     onLogout: () => void;
     musicVolume: number;
-    onVolumeChange: (volume: number) => void;
+    sfxVolume: number;
+    onMusicVolumeChange: (volume: number) => void;
+    onSfxVolumeChange: (volume: number) => void;
     city: string;
     race: string;
     currentView: 'city' | 'world';
@@ -25,7 +27,7 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.png',
 };
 
-export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
+export function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
@@ -111,6 +113,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                         </button>
                     </div>
                     <div className={styles.settingsContent}>
+                        {/* Música */}
                         <div className={styles.settingRow}>
                             <div className={styles.settingLabel}>
                                 <span className={styles.settingIcon}>🎵</span>
@@ -119,7 +122,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                             <div className={styles.volumeControl}>
                                 <button
                                     className={styles.volumeBtn}
-                                    onClick={() => onVolumeChange(musicVolume === 0 ? 0.3 : 0)}
+                                    onClick={() => onMusicVolumeChange(musicVolume === 0 ? 0.3 : 0)}
                                 >
                                     {musicVolume === 0 ? '🔇' : musicVolume < 0.5 ? '🔈' : '🔊'}
                                 </button>
@@ -128,11 +131,38 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                                     min="0"
                                     max="100"
                                     value={musicVolume * 100}
-                                    onChange={(e) => onVolumeChange(parseInt(e.target.value) / 100)}
+                                    onChange={(e) => onMusicVolumeChange(parseInt(e.target.value) / 100)}
                                     className={styles.volumeSlider}
                                 />
                                 <span className={styles.volumeValue}>
                                     {Math.round(musicVolume * 100)}%
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* SFX */}
+                        <div className={styles.settingRow} style={{ marginTop: '1rem' }}>
+                            <div className={styles.settingLabel}>
+                                <span className={styles.settingIcon}>⚔️</span>
+                                <span>Efectos</span>
+                            </div>
+                            <div className={styles.volumeControl}>
+                                <button
+                                    className={styles.volumeBtn}
+                                    onClick={() => onSfxVolumeChange(sfxVolume === 0 ? 0.5 : 0)}
+                                >
+                                    {sfxVolume === 0 ? '🔇' : sfxVolume < 0.5 ? '🔈' : '🔊'}
+                                </button>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={sfxVolume * 100}
+                                    onChange={(e) => onSfxVolumeChange(parseInt(e.target.value) / 100)}
+                                    className={styles.volumeSlider}
+                                />
+                                <span className={styles.volumeValue}>
+                                    {Math.round(sfxVolume * 100)}%
                                 </span>
                             </div>
                         </div>

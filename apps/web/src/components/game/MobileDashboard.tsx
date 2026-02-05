@@ -14,7 +14,8 @@ import { RankingPanel } from '@/components/game/RankingPanel';
 import { ConstructionQueue } from '@/components/game/ConstructionQueue';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { GlobalChat } from '@/components/game/GlobalChat';
-import { MusicPlayer, useMusicVolume } from '@/components/game/MusicPlayer';
+import { MusicPlayer } from '@/components/game/MusicPlayer';
+import { useVolume } from '@/hooks/useVolume';
 import { MobileSettings } from './MobileSettings';
 import { MobileBottomNav } from './MobileBottomNav';
 import styles from './MobileDashboard.module.css';
@@ -43,7 +44,7 @@ export function MobileDashboard() {
     const [showChat, setShowChat] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
-    const { volume, setVolume } = useMusicVolume();
+    const { musicVolume, sfxVolume, setMusicVolume, setSfxVolume } = useVolume();
 
     useEvents(player?.id, syncWithServer);
 
@@ -153,8 +154,10 @@ export function MobileDashboard() {
             {showSettings && (
                 <MobileSettings
                     onClose={() => setShowSettings(false)}
-                    volume={volume}
-                    onVolumeChange={setVolume}
+                    musicVolume={musicVolume}
+                    sfxVolume={sfxVolume}
+                    onMusicVolumeChange={setMusicVolume}
+                    onSfxVolumeChange={setSfxVolume}
                 />
             )}
 
@@ -191,7 +194,6 @@ export function MobileDashboard() {
             {/* Background Music */}
             <MusicPlayer
                 src="/assets/sounds/music/villge.mp3"
-                volume={volume}
             />
         </div>
     );

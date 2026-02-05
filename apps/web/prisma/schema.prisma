@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,258 +6,163 @@ datasource db {
   provider = "postgresql"
 }
 
-// ============================================
-// USER & AUTH
-// ============================================
-
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
   email     String?  @unique
-  password  String?  // Hashed, null for mock auth
-  
+  password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
   player    Player?
 }
 
-// ============================================
-// PLAYER & GAME STATE
-// ============================================
-
 model Player {
-  id        String   @id @default(cuid())
-  
-  // User relation
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Race (elfo, humano, orco, enano)
-  race      String
-  
-  // Resources
-  wood      Float    @default(500)
-  iron      Float    @default(300)
-  gold      Float    @default(200)
-  populationUsed Int @default(0)
-  populationMax  Int @default(200)
-  
-  // Timestamps for resource calculation
-  lastResourceUpdate DateTime @default(now())
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  city      City?
-  allianceMember AllianceMember?
-  
-  attackerReports CombatReport[] @relation("AttackerReports")
-  defenderReports CombatReport[] @relation("DefenderReports")
-
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  race               String
+  wood               Float           @default(500)
+  iron               Float           @default(300)
+  gold               Float           @default(200)
+  populationUsed     Int             @default(0)
+  populationMax      Int             @default(200)
+  lastResourceUpdate DateTime        @default(now())
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  bio                String?
+  experience         Int             @default(0)
+  level              Int             @default(1)
+  allianceMember     AllianceMember?
+  city               City?
+  attackerReports    CombatReport[]  @relation("AttackerReports")
+  defenderReports    CombatReport[]  @relation("DefenderReports")
+  receivedMessages   Message[]       @relation("ReceivedMessages")
+  sentMessages       Message[]       @relation("SentMessages")
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// ============================================
-// ALLIANCES
-// ============================================
-
 model Alliance {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  tag         String   @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
+  tag         String           @unique
   description String?
-  createdAt   DateTime @default(now())
-  
+  createdAt   DateTime         @default(now())
   members     AllianceMember[]
 }
 
 model AllianceMember {
-  id          String   @id @default(cuid())
-  
-  allianceId  String
-  alliance    Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
-  
-  playerId    String   @unique
-  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  
-  rank        String   @default("MEMBER") // LEADER, OFFICER, MEMBER
-  joinedAt    DateTime @default(now())
-  
+  id         String   @id @default(cuid())
+  allianceId String
+  playerId   String   @unique
+  rank       String   @default("MEMBER")
+  joinedAt   DateTime @default(now())
+  alliance   Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
   @@unique([allianceId, playerId])
 }
 
-// ============================================
-// CITY & BUILDINGS
-// ============================================
-
 model City {
-  id        String   @id @default(cuid())
-  name      String
-  
-  // Player relation
-  playerId  String   @unique
-  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Coordinates for world map
-  x         Int      @default(0)
-  y         Int      @default(0)
-  
+  id                String                  @id @default(cuid())
+  name              String
+  playerId          String                  @unique
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  x                 Int                     @default(0)
+  y                 Int                     @default(0)
   buildings         Building[]
+  player            Player                  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  originMovements   CombatMovement[]        @relation("OriginMovements")
+  targetMovements   CombatMovement[]        @relation("TargetMovements")
   constructionQueue ConstructionQueueItem[]
-  
-  // Military
-  units             Unit[]
   trainingQueue     TrainingQueueItem[]
-  
-  originMovements   CombatMovement[] @relation("OriginMovements")
-  targetMovements   CombatMovement[] @relation("TargetMovements")
+  units             Unit[]
 }
 
 model Building {
-  id        String   @id @default(cuid())
-  
-  // Building type (town_hall, farm, lumber_mill, etc)
-  type      String
-  level     Int      @default(0)
-  
-  // City relation
-  cityId    String
-  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  type   String
+  level  Int    @default(0)
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
   @@unique([cityId, type])
 }
 
 model ConstructionQueueItem {
   id           String   @id @default(cuid())
-  
   buildingType String
   targetLevel  Int
   startTime    DateTime @default(now())
   endTime      DateTime
-  
-  // City relation
   cityId       String
-  city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
   createdAt    DateTime @default(now())
+  city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
 
-// ============================================
-// MILITARY
-// ============================================
-
 model Unit {
-  id        String   @id @default(cuid())
-  
-  // Unit type (infantry, archer, etc)
-  type      String
-  count     Int      @default(0)
-  
-  // City relation
-  cityId    String
-  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  type   String
+  count  Int    @default(0)
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
   @@unique([cityId, type])
 }
 
 model TrainingQueueItem {
-  id           String   @id @default(cuid())
-  
-  unitType     String
-  count        Int
-  startTime    DateTime @default(now())
-  endTime      DateTime
-  
-  // City relation
-  cityId       String
-  city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
-  createdAt    DateTime @default(now())
+  id        String   @id @default(cuid())
+  unitType  String
+  count     Int
+  startTime DateTime @default(now())
+  endTime   DateTime
+  cityId    String
+  createdAt DateTime @default(now())
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
-// ============================================
-// COMBAT & MOVEMENTS
-// ============================================
 
 model CombatMovement {
-  id              String   @id @default(cuid())
-  
-  type            String   // ATTACK, SUPPORT, RETURN
-  
-  // Origins & Destiny
-  originCityId    String
-  originCity      City     @relation("OriginMovements", fields: [originCityId], references: [id])
-  
-  targetCityId    String
-  targetCity      City     @relation("TargetMovements", fields: [targetCityId], references: [id])
-  
-  // Timing
-  startTime       DateTime @default(now())
-  endTime         DateTime
-  
-  // Troops (JSON array of { type: string, count: number })
-  units           Json
-  
-  // Resources (for looting or return)
-  wood            Float    @default(0)
-  iron            Float    @default(0)
-  gold            Float    @default(0)
-  
-  createdAt       DateTime @default(now())
+  id           String   @id @default(cuid())
+  type         String
+  originCityId String
+  targetCityId String
+  startTime    DateTime @default(now())
+  endTime      DateTime
+  units        Json
+  wood         Float    @default(0)
+  iron         Float    @default(0)
+  gold         Float    @default(0)
+  createdAt    DateTime @default(now())
+  originCity   City     @relation("OriginMovements", fields: [originCityId], references: [id])
+  targetCity   City     @relation("TargetMovements", fields: [targetCityId], references: [id])
 }
 
 model CombatReport {
-  id              String   @id @default(cuid())
-  
-  // Relations
-  attackerId      String
-  attacker        Player   @relation("AttackerReports", fields: [attackerId], references: [id])
-  
-  defenderId      String
-  defender        Player   @relation("DefenderReports", fields: [defenderId], references: [id])
-  
-  originCityName  String
-  targetCityName  String
-  
-  // Results
-  won             Boolean
-  
-  // Troops summary (JSON: { attackerInitial, attackerLosses, defenderInitial, defenderLosses })
-  troopSummary    Json
-  
-  // Resources looted
-  lootedWood      Float    @default(0)
-  lootedIron      Float    @default(0)
-  lootedGold      Float    @default(0)
-  
-  timestamp       DateTime @default(now())
-  read            Boolean  @default(false)
+  id             String   @id @default(cuid())
+  attackerId     String
+  defenderId     String
+  originCityName String
+  targetCityName String
+  won            Boolean
+  troopSummary   Json
+  lootedWood     Float    @default(0)
+  lootedIron     Float    @default(0)
+  lootedGold     Float    @default(0)
+  timestamp      DateTime @default(now())
+  read           Boolean  @default(false)
+  attacker       Player   @relation("AttackerReports", fields: [attackerId], references: [id])
+  defender       Player   @relation("DefenderReports", fields: [defenderId], references: [id])
 }
 
-// ============================================
-// MESSAGING
-// ============================================
-
 model Message {
-  id          String   @id @default(cuid())
-  
-  subject     String
-  content     String   @db.Text
-  
-  senderId    String
-  sender      Player   @relation("SentMessages", fields: [senderId], references: [id])
-  
-  recipientId String
-  recipient   Player   @relation("ReceivedMessages", fields: [recipientId], references: [id])
-  
-  read        Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  
-  // Logical deletion so it doesn't disappear for both if only one deletes
-  deletedBySender    Boolean @default(false)
-  deletedByRecipient Boolean @default(false)
+  id                 String   @id @default(cuid())
+  subject            String
+  content            String
+  senderId           String
+  recipientId        String
+  read               Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  deletedBySender    Boolean  @default(false)
+  deletedByRecipient Boolean  @default(false)
+  recipient          Player   @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  sender             Player   @relation("SentMessages", fields: [senderId], references: [id])
 }

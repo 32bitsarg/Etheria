@@ -45,6 +45,13 @@ export function useEvents(playerId: string | undefined, onSync: () => void) {
                     }
                 }
 
+                if (data.type === 'LEVEL_UP') {
+                    if (data.targetPlayerId === playerId) {
+                        addToast(`✨ ¡FELICIDADES! Has alcanzado el nivel ${data.newLevel}.`, 'success');
+                        onSync(); // Sync to update sidebar level
+                    }
+                }
+
             } catch (error) {
                 console.error('Error parsing SSE event:', error);
             }

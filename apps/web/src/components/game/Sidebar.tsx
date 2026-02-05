@@ -13,6 +13,8 @@ interface SidebarProps {
     onViewChange: (view: 'city' | 'world') => void;
     onReportsClick: () => void;
     onMessagesClick: () => void;
+    onProfileClick: () => void;
+    level: number;
 }
 
 const RACE_IMAGES: Record<string, string> = {
@@ -22,7 +24,7 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.png',
 };
 
-export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick }: SidebarProps) {
+export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onProfileClick, level }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
@@ -34,7 +36,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
         { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.png', action: onMessagesClick },
         { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.png', action: onReportsClick },
         { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.png' },
-        { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.png' },
+        { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.png', action: onProfileClick },
     ];
 
     return (
@@ -45,7 +47,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                     <div className={styles.orbBorder}>
                         <img src={raceImage} alt={race} className={styles.raceImage} />
                     </div>
-                    <div className={styles.levelBadge}>1</div>
+                    <div className={styles.levelBadge}>{level}</div>
                 </div>
                 <div className={styles.headerInfo}>
                     <div className={styles.cityName}>{city}</div>

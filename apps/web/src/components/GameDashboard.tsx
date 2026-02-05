@@ -17,6 +17,7 @@ import { UnitsDisplay } from '@/components/game/UnitsDisplay';
 import { ReportsPanel } from '@/components/game/ReportsPanel';
 import { CombatMovements } from '@/components/game/CombatMovements';
 import { MessagesPanel } from '@/components/game/MessagesPanel';
+import { ProfilePanel } from '@/components/game/ProfilePanel';
 import {
     processTick,
     calculateProductionRates,
@@ -44,6 +45,8 @@ export function GameDashboard() {
     const [showBuildingPanel, setShowBuildingPanel] = useState(false);
     const [showReportsPanel, setShowReportsPanel] = useState(false);
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
+    const [showProfilePanel, setShowProfilePanel] = useState(false);
+    const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
     const [view, setView] = useState<'city' | 'world'>('city');
 
     // Música y eventos
@@ -72,6 +75,11 @@ export function GameDashboard() {
     const handleBuildingClick = (type: BuildingType) => {
         setSelectedBuilding(type);
         setShowBuildingPanel(true);
+    };
+
+    const handleOpenProfile = (id: string = player.id) => {
+        setProfilePlayerId(id);
+        setShowProfilePanel(true);
     };
 
     const handleCancelConstruction = async (queueItemId: string) => {
@@ -257,6 +265,7 @@ export function GameDashboard() {
                         playerCityCoords={{ x: (player.city as any).x || 0, y: (player.city as any).y || 0 }}
                         currentPlayerId={userId || undefined}
                         availableUnits={(player.city as any).units || []}
+                        onViewProfile={handleOpenProfile}
                     />
                 )}
             </div>
@@ -293,6 +302,14 @@ export function GameDashboard() {
                 />
             )}
 
+            {showProfilePanel && profilePlayerId && (
+                <ProfilePanel
+                    playerId={profilePlayerId}
+                    isOwnProfile={profilePlayerId === player.id}
+                    onClose={() => setShowProfilePanel(false)}
+                />
+            )}
+
             {/* Sidebar with Settings and Logout */}
             <Sidebar
                 onLogout={logout}
@@ -304,6 +321,8 @@ export function GameDashboard() {
                 onViewChange={setView}
                 onReportsClick={() => setShowReportsPanel(true)}
                 onMessagesClick={() => setShowMessagesPanel(true)}
+                onProfileClick={() => handleOpenProfile()}
+                level={player.level || 1}
             />
 
             {/* Background Music */}

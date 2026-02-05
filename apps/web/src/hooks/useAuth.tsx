@@ -114,6 +114,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 populationUsed: p.populationUsed,
                 populationMax: p.populationMax
             },
+            level: p.level || 1,
+            experience: p.experience || 0,
             lastTick: new Date(p.lastResourceUpdate).getTime(),
             createdAt: new Date(p.createdAt).getTime(),
             alliance: p.allianceMember || null

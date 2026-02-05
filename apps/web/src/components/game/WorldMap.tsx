@@ -25,6 +25,7 @@ interface WorldMapProps {
     playerCityCoords?: { x: number; y: number };
     currentPlayerId?: string;
     availableUnits?: { type: string; count: number }[];
+    onViewProfile?: (playerId: string) => void;
 }
 
 const MAP_SIZE = 10000;
@@ -56,7 +57,7 @@ import { RadialMenu } from './RadialMenu';
 import { AttackPanel } from './AttackPanel';
 import { useToast } from '../ui/ToastContext';
 
-export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [] }: WorldMapProps) {
+export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [], onViewProfile }: WorldMapProps) {
     const { addToast } = useToast();
     const [cities, setCities] = useState<WorldCity[]>([]);
     const [loading, setLoading] = useState(true);
@@ -296,6 +297,12 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                             label: 'Atacar', icon: '⚔️', action: () => {
                                 console.log('Abriendo panel de ataque para:', selectedCity.city.name);
                                 setShowAttackPanel({ id: selectedCity.city.id, name: selectedCity.city.name });
+                            }
+                        },
+                        {
+                            label: 'Perfil', icon: '👤', action: () => {
+                                console.log('Abriendo perfil de:', selectedCity.city.player.userId);
+                                if (onViewProfile) onViewProfile(selectedCity.city.player.userId);
                             }
                         },
                         { label: 'Espiar', icon: '🕵️', action: () => console.log('Espiar a', selectedCity.city.name) },

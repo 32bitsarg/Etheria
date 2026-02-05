@@ -5,7 +5,9 @@ import {
     BuildingType,
     resolveBattle,
     UnitType,
-    UNIT_STATS
+    UNIT_STATS,
+    getUpgradeCost,
+    getUnitCost
 } from '@lootsystem/game-engine';
 import { gameEvents, EVENTS } from '@/lib/gameEvents';
 
@@ -19,6 +21,13 @@ const RACE_BONUSES: Record<string, { wood: number; iron: number; gold: number; p
     humano: { wood: 0, iron: 0, gold: 0.10, pop: 0 },
     orco: { wood: 0, iron: 0.12, gold: 0, pop: 0.10 },
     enano: { wood: 0, iron: 0.18, gold: 0.05, pop: 0 },
+};
+
+/**
+ * Calcula la XP necesaria para el siguiente nivel
+ */
+const getXPForLevel = (level: number) => {
+    return Math.floor(100 * Math.pow(1.8, level - 1));
 };
 
 /**
@@ -131,21 +140,59 @@ export async function POST(request: NextRequest) {
         const unitUpdates: Record<string, number> = {};
         for (const completed of completedTraining) {
             const current = unitUpdates[completed.unitType] || 0;
-            unitUpdates[completed.unitType] = current + completed.count;
+            unitUpdates[completed.unitType] = current + (completed as any).count;
+        }
+
+        // Calculate XP Gain
+        let xpGained = 0;
+
+        // Buildings XP
+        for (const building of buildingUpdates) {
+            const cost = getUpgradeCost(building.type as BuildingType, building.level);
+            const totalResources = (cost.wood ?? 0) + (cost.iron ?? 0) + (cost.gold ?? 0);
+            xpGained += (building.level * 10) + Math.floor(totalResources / 50);
+        }
+
+        // Units XP
+        for (const [unitType, count] of Object.entries(unitUpdates)) {
+            const cost = getUnitCost(unitType as UnitType);
+            const popMultiplier = cost.population || 1;
+            xpGained += (count as any) * popMultiplier * 2;
+        }
+
+        // Handle Level Up Logic
+        let currentLevel = (player as any).level || 1;
+        let currentXP = ((player as any).experience || 0) + xpGained;
+        let leveledUp = false;
+
+        while (currentXP >= getXPForLevel(currentLevel + 1)) {
+            currentXP -= getXPForLevel(currentLevel + 1);
+            currentLevel++;
+            leveledUp = true;
         }
 
         // Update database in transaction
         await prisma.$transaction(async (tx) => {
-            // Update player resources
-            await tx.player.update({
+            // Update player resources and progression
+            await (tx.player as any).update({
                 where: { id: playerId },
                 data: {
                     wood: newWood,
                     iron: newIron,
                     gold: newGold,
+                    experience: currentXP,
+                    level: currentLevel,
                     lastResourceUpdate: now,
                 },
             });
+
+            if (leveledUp) {
+                // Emit level up event
+                gameEvents.emit('LEVEL_UP', {
+                    targetPlayerId: playerId,
+                    newLevel: currentLevel
+                });
+            }
 
             // Update completed buildings
             for (const building of buildingUpdates) {

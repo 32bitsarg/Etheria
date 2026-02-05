@@ -48,7 +48,11 @@ export const CHANGELOG: ChangelogEntry[] = [
             },
             {
                 category: 'ui',
-                description: 'Nuevas alertas visuales (Toasts) inmediatas para Ataques Entrantes y Reportes de Batalla.',
+                description: 'Sistema de Notificaciones Integrado: Nuevo diseño medieval en el lateral inferior para avisos de combate, mensajes y eventos.',
+            },
+            {
+                category: 'ui',
+                description: 'Gestión de Avisos Inteligente: Las notificaciones ahora persisten 15s, se pueden cerrar manualmente y tienen un límite de 5 elementos para evitar el hacinamiento.',
             },
             {
                 category: 'ui',

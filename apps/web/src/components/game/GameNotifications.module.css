@@ -1,0 +1,109 @@
+.notificationContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 320px;
+    width: 100%;
+}
+
+.notification {
+    pointer-events: auto;
+    background: linear-gradient(135deg, rgba(28, 25, 23, 0.95) 0%, rgba(12, 10, 9, 0.98) 100%);
+    border: 1px solid #44403c;
+    border-left: 3px solid #d4af37;
+    border-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(212, 175, 55, 0.05);
+    animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.notification:hover {
+    border-color: #d4af37;
+    transform: translateX(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+.icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.content {
+    flex: 1;
+}
+
+.message {
+    color: #e7e5e4;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-family: var(--font-body);
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.closeBtn {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a8a29e;
+    cursor: pointer;
+    font-size: 0.8rem;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: 0.2s;
+    margin-top: 2px;
+}
+
+.closeBtn:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Tipos con colores medievales */
+.success {
+    border-left-color: #22c55e;
+    border-right: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.error {
+    border-left-color: #ef4444;
+    border-right: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.warning {
+    border-left-color: #eab308;
+    border-right: 1px solid rgba(234, 179, 8, 0.1);
+}
+
+.info {
+    border-left-color: #3b82f6;
+    border-right: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

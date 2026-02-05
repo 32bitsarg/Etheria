@@ -16,8 +16,8 @@
     z-index: 200;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    /* Clips scrollbars and children to border-radius */
+    overflow: visible;
+    /* Permite que el modal de ajustes salga hacia la derecha */
 
     /* Texture & Shape */
     background: var(--bg-secondary);
@@ -195,10 +195,16 @@
     transform: scale(1.05);
 }
 
-.menuIcon {
-    font-size: 0.8rem;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8));
-    color: #fff;
+.iconImage {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    transition: transform 0.2s;
+}
+
+.menuItem:hover .iconImage {
+    transform: scale(1.1);
 }
 
 .menuLabel {

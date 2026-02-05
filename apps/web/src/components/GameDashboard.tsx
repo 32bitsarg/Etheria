@@ -16,6 +16,7 @@ import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { UnitsDisplay } from '@/components/game/UnitsDisplay';
 import { ReportsPanel } from '@/components/game/ReportsPanel';
 import { CombatMovements } from '@/components/game/CombatMovements';
+import { MessagesPanel } from '@/components/game/MessagesPanel';
 import {
     processTick,
     calculateProductionRates,
@@ -42,6 +43,7 @@ export function GameDashboard() {
     const [selectedBuilding, setSelectedBuilding] = useState<BuildingType | null>(null);
     const [showBuildingPanel, setShowBuildingPanel] = useState(false);
     const [showReportsPanel, setShowReportsPanel] = useState(false);
+    const [showMessagesPanel, setShowMessagesPanel] = useState(false);
     const [view, setView] = useState<'city' | 'world'>('city');
 
     // Música y eventos
@@ -283,6 +285,14 @@ export function GameDashboard() {
                 />
             )}
 
+            {/* Messages Panel */}
+            {showMessagesPanel && (
+                <MessagesPanel
+                    playerId={player.id}
+                    onClose={() => setShowMessagesPanel(false)}
+                />
+            )}
+
             {/* Sidebar with Settings and Logout */}
             <Sidebar
                 onLogout={logout}
@@ -293,6 +303,7 @@ export function GameDashboard() {
                 currentView={view}
                 onViewChange={setView}
                 onReportsClick={() => setShowReportsPanel(true)}
+                onMessagesClick={() => setShowMessagesPanel(true)}
             />
 
             {/* Background Music */}

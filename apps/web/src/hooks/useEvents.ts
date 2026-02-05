@@ -39,6 +39,12 @@ export function useEvents(playerId: string | undefined, onSync: () => void) {
                     }
                 }
 
+                if (data.type === 'NEW_MESSAGE') {
+                    if (data.targetPlayerId === playerId) {
+                        addToast(`✉️ Has recibido un nuevo mensaje de correo.`, 'info');
+                    }
+                }
+
             } catch (error) {
                 console.error('Error parsing SSE event:', error);
             }

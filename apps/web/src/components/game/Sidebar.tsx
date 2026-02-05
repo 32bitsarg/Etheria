@@ -12,6 +12,7 @@ interface SidebarProps {
     currentView: 'city' | 'world';
     onViewChange: (view: 'city' | 'world') => void;
     onReportsClick: () => void;
+    onMessagesClick: () => void;
 }
 
 const RACE_IMAGES: Record<string, string> = {
@@ -21,19 +22,19 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.png',
 };
 
-export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick }: SidebarProps) {
+export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
     const raceImage = RACE_IMAGES[race.toLowerCase()] || RACE_IMAGES['humano'];
 
     const menuItems = [
-        { id: 'city', label: 'Ciudad', icon: '🏰', view: 'city' as const },
-        { id: 'world', label: 'Mapa', icon: '🌍', view: 'world' as const },
-        { id: 'messages', label: 'Mensajes', icon: '📜' },
-        { id: 'reports', label: 'Informes', icon: '📨', action: onReportsClick },
-        { id: 'ranking', label: 'Clasificación', icon: '🏆' },
-        { id: 'profile', label: 'Perfil', icon: '👤' },
+        { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.png', view: 'city' as const },
+        { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.png', view: 'world' as const },
+        { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.png', action: onMessagesClick },
+        { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.png', action: onReportsClick },
+        { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.png' },
+        { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.png' },
     ];
 
     return (
@@ -64,7 +65,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                         }}
                     >
                         <div className={styles.menuIconFrame}>
-                            <span className={styles.menuIcon}>{item.icon}</span>
+                            <img src={item.icon} alt="" className={styles.iconImage} />
                         </div>
                         <span className={styles.menuLabel}>{item.label}</span>
                     </button>
@@ -78,7 +79,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                     onClick={() => setShowSettings(!showSettings)}
                 >
                     <div className={styles.menuIconFrame}>
-                        <SettingsIcon />
+                        <img src="/assets/hud/settingsicon.png" alt="" className={styles.iconImage} />
                     </div>
                     <span className={styles.menuLabel}>Ajustes</span>
                 </button>
@@ -88,7 +89,7 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
                     onClick={onLogout}
                 >
                     <div className={styles.menuIconFrame}>
-                        <LogoutIcon />
+                        <img src="/assets/hud/logouticon.png" alt="" className={styles.iconImage} />
                     </div>
                     <span className={styles.menuLabel}>Salir</span>
                 </button>
@@ -139,21 +140,4 @@ export function Sidebar({ onLogout, musicVolume, onVolumeChange, city, race, cur
     );
 }
 
-function SettingsIcon() {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-    );
-}
 
-function LogoutIcon() {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
-    );
-}

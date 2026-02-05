@@ -59,6 +59,26 @@ export const CHANGELOG: ChangelogEntry[] = [
                 description: 'Corregido error en el retorno de tropas donde las unidades no se acreditaban correctamente tras una batalla.',
             },
             {
+                category: 'feature',
+                description: 'Correo Imperial: Implementado sistema completo de mensajería interna entre jugadores.',
+            },
+            {
+                category: 'ui',
+                description: 'Sidebar Renovado: Nuevos iconos premium personalizados de alta resolución.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Next.js 15 Compatibility: Corregido error de desglosado de parámetros asíncronos en rutas dinámicas.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Buscador de Destinatarios: Ahora permite enviar mensajes buscando tanto por Username como por Nombre de Ciudad.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Corregida visibilidad del panel de ajustes en el sidebar mediante ajuste de desbordamiento.',
+            },
+            {
                 category: 'performance',
                 description: 'Optimización de consola: Eliminado el spam de logs de base de datos para un desarrollo más limpio.',
             },

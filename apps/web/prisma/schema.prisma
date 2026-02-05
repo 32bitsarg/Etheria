@@ -57,6 +57,9 @@ model Player {
   
   attackerReports CombatReport[] @relation("AttackerReports")
   defenderReports CombatReport[] @relation("DefenderReports")
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 // ============================================
@@ -236,4 +239,28 @@ model CombatReport {
   
   timestamp       DateTime @default(now())
   read            Boolean  @default(false)
+}
+
+// ============================================
+// MESSAGING
+// ============================================
+
+model Message {
+  id          String   @id @default(cuid())
+  
+  subject     String
+  content     String   @db.Text
+  
+  senderId    String
+  sender      Player   @relation("SentMessages", fields: [senderId], references: [id])
+  
+  recipientId String
+  recipient   Player   @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  // Logical deletion so it doesn't disappear for both if only one deletes
+  deletedBySender    Boolean @default(false)
+  deletedByRecipient Boolean @default(false)
 }

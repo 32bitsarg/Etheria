@@ -22,8 +22,13 @@ export async function GET(request: NextRequest) {
         sendEvent({ type: EVENTS.BATTLE_REPORT, ...data });
     };
 
+    const onNewMessage = (data: any) => {
+        sendEvent({ type: 'NEW_MESSAGE', ...data });
+    };
+
     gameEvents.on(EVENTS.ATTACK_INCOMING, onAttackIncoming);
     gameEvents.on(EVENTS.BATTLE_REPORT, onBattleReport);
+    gameEvents.on('NEW_MESSAGE', onNewMessage);
 
     // Mantener la conexión viva con un heartbeat
     const heartbeat = setInterval(() => {
@@ -35,6 +40,7 @@ export async function GET(request: NextRequest) {
         clearInterval(heartbeat);
         gameEvents.off(EVENTS.ATTACK_INCOMING, onAttackIncoming);
         gameEvents.off(EVENTS.BATTLE_REPORT, onBattleReport);
+        gameEvents.off('NEW_MESSAGE', onNewMessage);
         writer.close();
     });
 

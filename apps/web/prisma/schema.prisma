@@ -54,6 +54,9 @@ model Player {
   
   city      City?
   allianceMember AllianceMember?
+  
+  attackerReports CombatReport[] @relation("AttackerReports")
+  defenderReports CombatReport[] @relation("DefenderReports")
 }
 
 // ============================================
@@ -110,6 +113,9 @@ model City {
   // Military
   units             Unit[]
   trainingQueue     TrainingQueueItem[]
+  
+  originMovements   CombatMovement[] @relation("OriginMovements")
+  targetMovements   CombatMovement[] @relation("TargetMovements")
 }
 
 model Building {
@@ -172,4 +178,62 @@ model TrainingQueueItem {
   city         City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
   
   createdAt    DateTime @default(now())
+}
+// ============================================
+// COMBAT & MOVEMENTS
+// ============================================
+
+model CombatMovement {
+  id              String   @id @default(cuid())
+  
+  type            String   // ATTACK, SUPPORT, RETURN
+  
+  // Origins & Destiny
+  originCityId    String
+  originCity      City     @relation("OriginMovements", fields: [originCityId], references: [id])
+  
+  targetCityId    String
+  targetCity      City     @relation("TargetMovements", fields: [targetCityId], references: [id])
+  
+  // Timing
+  startTime       DateTime @default(now())
+  endTime         DateTime
+  
+  // Troops (JSON array of { type: string, count: number })
+  units           Json
+  
+  // Resources (for looting or return)
+  wood            Float    @default(0)
+  iron            Float    @default(0)
+  gold            Float    @default(0)
+  
+  createdAt       DateTime @default(now())
+}
+
+model CombatReport {
+  id              String   @id @default(cuid())
+  
+  // Relations
+  attackerId      String
+  attacker        Player   @relation("AttackerReports", fields: [attackerId], references: [id])
+  
+  defenderId      String
+  defender        Player   @relation("DefenderReports", fields: [defenderId], references: [id])
+  
+  originCityName  String
+  targetCityName  String
+  
+  // Results
+  won             Boolean
+  
+  // Troops summary (JSON: { attackerInitial, attackerLosses, defenderInitial, defenderLosses })
+  troopSummary    Json
+  
+  // Resources looted
+  lootedWood      Float    @default(0)
+  lootedIron      Float    @default(0)
+  lootedGold      Float    @default(0)
+  
+  timestamp       DateTime @default(now())
+  read            Boolean  @default(false)
 }

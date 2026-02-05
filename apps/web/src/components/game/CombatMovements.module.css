@@ -1,0 +1,71 @@
+.movementItem {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.incoming {
+    border-left: 3px solid #ef4444;
+}
+
+.outgoing {
+    border-left: 3px solid #60a5fa;
+}
+
+.returning {
+    border-left: 3px solid #a855f7;
+}
+
+.movementHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.type {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
+
+.incoming .type {
+    color: #f87171;
+}
+
+.outgoing .type {
+    color: #60a5fa;
+}
+
+.returning .type {
+    color: #c084fc;
+}
+
+.target {
+    color: #ffd700;
+}
+
+.timer {
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.units {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.unitCount {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+}

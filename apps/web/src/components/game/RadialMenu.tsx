@@ -28,10 +28,11 @@ export function RadialMenu({ options, onClose, position }: RadialMenuProps) {
 
     return (
         <>
-            <div className={styles.radialMenuOverlay} onClick={onClose} />
+            <div className={styles.radialMenuOverlay} onClick={onClose} onMouseDown={(e) => e.stopPropagation()} />
             <div
                 className={`${styles.radialMenuContainer} ${active ? styles.active : ''}`}
                 style={{ left: position.x, top: position.y }}
+                onMouseDown={(e) => e.stopPropagation()}
             >
                 {options.map((opt, i) => {
                     // Calcular ángulo para cada item (distribuirlos en abanico o círculo)

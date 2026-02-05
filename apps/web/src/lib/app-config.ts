@@ -13,7 +13,7 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.0.6',
+    version: '0.0.7',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
@@ -32,6 +32,38 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.0.7',
+        date: '2026-02-04',
+        title: 'Real-Time Reactivity & Zero Lag',
+        type: 'minor',
+        changes: [
+            {
+                category: 'performance',
+                description: 'Sincronización Inmediata: Los edificios y movimientos ahora se resuelven en el milisegundo en que el temporizador llega a cero.',
+            },
+            {
+                category: 'feature',
+                description: 'Implementado sistema de Server-Sent Events (SSE) para notificaciones en tiempo real sin recargar la página.',
+            },
+            {
+                category: 'ui',
+                description: 'Nuevas alertas visuales (Toasts) inmediatas para Ataques Entrantes y Reportes de Batalla.',
+            },
+            {
+                category: 'ui',
+                description: 'Filtrado optimista: Los elementos terminados desaparecen instantáneamente de la barra lateral.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Corregido error en el retorno de tropas donde las unidades no se acreditaban correctamente tras una batalla.',
+            },
+            {
+                category: 'performance',
+                description: 'Optimización de consola: Eliminado el spam de logs de base de datos para un desarrollo más limpio.',
+            },
+        ],
+    },
     {
         version: '0.0.6',
         date: '2026-02-04',

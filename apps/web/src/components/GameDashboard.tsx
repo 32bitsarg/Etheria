@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useEvents } from '@/hooks/useEvents'; // Added this line
 import { CityMap } from '@/components/game/CityMap';
 import { WorldMap } from '@/components/game/WorldMap';
 import { TileMapCanvas } from '@/components/game/TileMapCanvas';
@@ -13,6 +14,8 @@ import { MusicPlayer, useMusicVolume } from '@/components/game/MusicPlayer';
 import { Sidebar } from '@/components/game/Sidebar';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { UnitsDisplay } from '@/components/game/UnitsDisplay';
+import { ReportsPanel } from '@/components/game/ReportsPanel';
+import { CombatMovements } from '@/components/game/CombatMovements';
 import {
     processTick,
     calculateProductionRates,
@@ -33,14 +36,17 @@ export function GameDashboard() {
         instantCompleteBuilding,
         cancelBuildingUpgrade,
         cancelTraining,
-        finishTraining
+        finishTraining,
+        syncWithServer
     } = useAuth();
     const [selectedBuilding, setSelectedBuilding] = useState<BuildingType | null>(null);
     const [showBuildingPanel, setShowBuildingPanel] = useState(false);
+    const [showReportsPanel, setShowReportsPanel] = useState(false);
     const [view, setView] = useState<'city' | 'world'>('city');
 
-    // Music control
+    // Música y eventos
     const { volume, setVolume } = useMusicVolume();
+    useEvents(player?.id, syncWithServer);
 
     // Actualizar recursos cada segundo
     useEffect(() => {
@@ -212,16 +218,24 @@ export function GameDashboard() {
                 <UnitsDisplay />
 
                 <div className={styles.queuesContainer}>
+                    <CombatMovements
+                        originMovements={(player.city as any).originMovements || []}
+                        targetMovements={(player.city as any).targetMovements || []}
+                        onArrival={syncWithServer}
+                    />
+
                     <ConstructionQueue
                         queue={player.city.constructionQueue}
                         onCancel={cancelBuildingUpgrade}
                         onInstantComplete={instantCompleteBuilding}
+                        onComplete={syncWithServer}
                     />
 
                     <TrainingQueue
-                        queue={(player.city as any).trainingQueue || []}
+                        queue={player.city.trainingQueue}
                         onCancel={cancelTraining}
                         onFinishNow={finishTraining}
+                        onComplete={syncWithServer}
                     />
                 </div>
             </div>
@@ -240,6 +254,7 @@ export function GameDashboard() {
                     <WorldMap
                         playerCityCoords={{ x: (player.city as any).x || 0, y: (player.city as any).y || 0 }}
                         currentPlayerId={userId || undefined}
+                        availableUnits={(player.city as any).units || []}
                     />
                 )}
             </div>
@@ -260,6 +275,14 @@ export function GameDashboard() {
             {/* Global Chat */}
             <GlobalChat userId={player.id} username={player.city.name} />
 
+            {/* Reports Panel */}
+            {showReportsPanel && (
+                <ReportsPanel
+                    playerId={player.id}
+                    onClose={() => setShowReportsPanel(false)}
+                />
+            )}
+
             {/* Sidebar with Settings and Logout */}
             <Sidebar
                 onLogout={logout}
@@ -269,6 +292,7 @@ export function GameDashboard() {
                 race={race?.nombre || player.race}
                 currentView={view}
                 onViewChange={setView}
+                onReportsClick={() => setShowReportsPanel(true)}
             />
 
             {/* Background Music */}

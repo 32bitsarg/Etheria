@@ -24,6 +24,7 @@ interface WorldCity {
 interface WorldMapProps {
     playerCityCoords?: { x: number; y: number };
     currentPlayerId?: string;
+    availableUnits?: { type: string; count: number }[];
 }
 
 const MAP_SIZE = 10000;
@@ -50,9 +51,13 @@ function seededRandom(seed: number) {
     return x - Math.floor(x);
 }
 
+import { UnitType } from '@lootsystem/game-engine';
 import { RadialMenu } from './RadialMenu';
+import { AttackPanel } from './AttackPanel';
+import { useToast } from '../ui/ToastContext';
 
-export function WorldMap({ playerCityCoords, currentPlayerId }: WorldMapProps) {
+export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [] }: WorldMapProps) {
+    const { addToast } = useToast();
     const [cities, setCities] = useState<WorldCity[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -64,6 +69,7 @@ export function WorldMap({ playerCityCoords, currentPlayerId }: WorldMapProps) {
     const hasCentered = useRef(false);
 
     const [selectedCity, setSelectedCity] = useState<{ city: WorldCity, pos: { x: number, y: number } } | null>(null);
+    const [showAttackPanel, setShowAttackPanel] = useState<{ id: string, name: string } | null>(null);
 
     const isDragging = useRef(false);
     const startPos = useRef({ x: 0, y: 0 });
@@ -286,10 +292,28 @@ export function WorldMap({ playerCityCoords, currentPlayerId }: WorldMapProps) {
                     position={selectedCity.pos}
                     onClose={() => setSelectedCity(null)}
                     options={[
-                        { label: 'Atacar', icon: '⚔️', action: () => console.log('Atacar a', selectedCity.city.name) },
+                        {
+                            label: 'Atacar', icon: '⚔️', action: () => {
+                                console.log('Abriendo panel de ataque para:', selectedCity.city.name);
+                                setShowAttackPanel({ id: selectedCity.city.id, name: selectedCity.city.name });
+                            }
+                        },
                         { label: 'Espiar', icon: '🕵️', action: () => console.log('Espiar a', selectedCity.city.name) },
                         { label: 'Comerciar', icon: '⚖️', action: () => console.log('Comerciar con', selectedCity.city.name) },
                     ]}
+                />
+            )}
+
+            {showAttackPanel && (
+                <AttackPanel
+                    targetCity={showAttackPanel}
+                    attackerPlayerId={currentPlayerId || ''}
+                    availableUnits={availableUnits}
+                    onClose={() => setShowAttackPanel(null)}
+                    onAttackStarted={(data) => {
+                        console.log('Ataque enviado:', data);
+                        addToast(`¡Ataque enviado! Llegada en ${data.travelTimeSeconds}s`, 'success');
+                    }}
                 />
             )}
         </div>

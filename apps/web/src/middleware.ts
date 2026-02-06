@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt, AUTH_COOKIE_NAME } from '@/lib/auth';
 
 // Add paths that don't require authentication
-const publicPaths = ['/', '/login', '/register', '/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/session'];
+const publicPaths = ['/', '/login', '/register', '/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/session', '/manifest.json', '/sw.js'];
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -73,7 +73,10 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
+         * - manifest.json
+         * - sw.js
+         * - assets
          */
-        '/((?!_next/static|_next/image|favicon.ico|assets).*)',
+        '/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|assets).*)',
     ],
 };

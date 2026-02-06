@@ -11,14 +11,14 @@ export async function generateStaticParams() {
 
 // Map plural ID to singular capitalized filename
 const IMAGE_MAP: Record<string, string> = {
-    'humans': 'Human.png',
-    'h': 'Human.png',
-    'elves': 'Elf.png',
-    'e': 'Elf.png',
-    'orcs': 'Orc.png',
-    'o': 'Orc.png',
-    'dwarves': 'Dwarf.png',
-    'd': 'Dwarf.png'
+    'humans': 'Human.webp',
+    'h': 'Human.webp',
+    'elves': 'Elf.webp',
+    'e': 'Elf.webp',
+    'orcs': 'Orc.webp',
+    'o': 'Orc.webp',
+    'dwarves': 'Dwarf.webp',
+    'd': 'Dwarf.webp'
 };
 
 const ID_MAP: Record<string, string> = {
@@ -39,7 +39,7 @@ export default async function RacePage({ params }: { params: Promise<{ id: strin
         notFound();
     }
 
-    const imageName = IMAGE_MAP[id] || IMAGE_MAP[raceId] || 'Human.png';
+    const imageName = IMAGE_MAP[id] || IMAGE_MAP[raceId] || 'Human.webp';
 
     // Basic Markdown Rendering with Design System Integration
     const renderContent = (content: string) => {

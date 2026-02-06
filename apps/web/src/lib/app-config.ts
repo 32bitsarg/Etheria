@@ -13,11 +13,11 @@
 
 export const APP_CONFIG = {
     name: 'Etheria',
-    version: '0.1.0',
+    version: '0.1.1',
     description: 'Un juego de estrategia medieval en tiempo real',
     author: 'Etheria Team',
     website: 'https://etheria.game',
-    icon: '/assets/ico.png',
+    icon: '/assets/ico.webp',
 } as const;
 
 export interface ChangelogEntry {
@@ -32,6 +32,34 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+    {
+        version: '0.1.1',
+        date: '2026-02-06',
+        title: 'Performance & Architecture Optimization',
+        type: 'patch',
+        changes: [
+            {
+                category: 'performance',
+                description: 'Migración masiva de activos: Todas las imágenes JPG/PNG convertidas a WebP, reduciendo el peso de carga en un ~90%.',
+            },
+            {
+                category: 'performance',
+                description: 'Carga Dinámica (Dynamic Imports): Los paneles del juego (Reportes, Perfil, Chat) ahora se descargan solo bajo demanda.',
+            },
+            {
+                category: 'performance',
+                description: 'Optimización de Renderizado: Implementado React.memo y memorización de callbacks para reducir el uso de CPU y batería.',
+            },
+            {
+                category: 'performance',
+                description: 'Next.js Fonts: Integración nativa de tipografía medieval para una carga instantánea sin peticiones externas.',
+            },
+            {
+                category: 'bugfix',
+                description: 'Restablecida la comunicación del chat global para operar bajo el nuevo dominio log.stockcito.com.',
+            },
+        ],
+    },
     {
         version: '0.1.0',
         date: '2026-02-05',
@@ -417,12 +445,8 @@ export const TYPE_INFO: Record<ChangelogEntry['type'], { label: string; color: s
 
 export const THEME_CONFIG = {
     fonts: {
-        heading: '"Cinzel Decorative", serif',
-        body: '"MedievalSharp", cursive',
-        urls: [
-            "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap",
-            "https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
-        ]
+        heading: 'var(--font-heading)',
+        body: 'var(--font-body)',
     },
     colors: {
         // ROYAL MEDIEVAL DARK FANTASY - Authentic & Epic

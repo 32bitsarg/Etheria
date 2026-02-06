@@ -26,5 +26,9 @@
     "drop-system"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "glob": "^13.0.1",
+    "sharp": "^0.34.5"
+  }
 }

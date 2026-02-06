@@ -28,7 +28,7 @@ export function TileMapCanvas({ width = 30, height = 20 }: TileMapProps) {
     useEffect(() => {
         // Cargar Imagen
         const img = new Image();
-        img.src = '/assets/tilesets/map/spritesheet.png';
+        img.src = '/assets/tilesets/map/spritesheet.webp';
         img.onload = () => setTileset(img);
         img.onerror = () => console.error('Error loading spritesheet');
 

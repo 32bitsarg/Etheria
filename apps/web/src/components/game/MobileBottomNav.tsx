@@ -10,13 +10,13 @@ interface MobileBottomNavProps {
 
 export function MobileBottomNav({ currentView, onViewChange, onPanelChange }: MobileBottomNavProps) {
     const items = [
-        { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.png', view: 'city' as const },
-        { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.png', view: 'world' as const },
-        { id: 'messages', label: 'SMS', icon: '/assets/hud/messageicon.png', panel: 'messages' },
-        { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.png', panel: 'reports' },
-        { id: 'ranking', label: 'Top', icon: '/assets/hud/rankicon.png', panel: 'ranking' },
-        { id: 'profile', label: 'Yo', icon: '/assets/hud/profileicon.png', panel: 'profile' },
-        { id: 'settings', label: 'Ajustes', icon: '/assets/hud/settingsicon.png', panel: 'settings' },
+        { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.webp', view: 'city' as const },
+        { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.webp', view: 'world' as const },
+        { id: 'messages', label: 'SMS', icon: '/assets/hud/messageicon.webp', panel: 'messages' },
+        { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.webp', panel: 'reports' },
+        { id: 'ranking', label: 'Top', icon: '/assets/hud/rankicon.webp', panel: 'ranking' },
+        { id: 'profile', label: 'Yo', icon: '/assets/hud/profileicon.webp', panel: 'profile' },
+        { id: 'settings', label: 'Ajustes', icon: '/assets/hud/settingsicon.webp', panel: 'settings' },
     ];
 
     return (

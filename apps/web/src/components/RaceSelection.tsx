@@ -9,10 +9,10 @@ interface RaceSelectionProps {
 }
 
 const RACE_IMAGES: Record<Raza, string> = {
-    [Raza.ELFO]: '/assets/races/Elf.png',
-    [Raza.HUMANO]: '/assets/races/Human.png',
-    [Raza.ORCO]: '/assets/races/Orc.png',
-    [Raza.ENANO]: '/assets/races/Dwarf.png',
+    [Raza.ELFO]: '/assets/races/Elf.webp',
+    [Raza.HUMANO]: '/assets/races/Human.webp',
+    [Raza.ORCO]: '/assets/races/Orc.webp',
+    [Raza.ENANO]: '/assets/races/Dwarf.webp',
 };
 
 export function RaceSelection({ onSelect }: RaceSelectionProps) {

@@ -13,7 +13,7 @@
 .ambientBg {
     position: absolute;
     inset: 0;
-    background-image: url('/assets/tilesets/villagebg.png');
+    background-image: url('/assets/tilesets/villagebg.webp');
     /* Opciones para jugar con el tamaño:
        - cover:    Cubre todo (hace zoom si es necesario).
        - contain:  Se ve entera (puede dejar bordes).

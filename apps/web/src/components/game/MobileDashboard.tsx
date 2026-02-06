@@ -1,20 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEvents } from '@/hooks/useEvents';
 import { CityMap } from '@/components/game/CityMap';
 import { WorldMap } from '@/components/game/WorldMap';
 import { BuildingType } from '@lootsystem/game-engine';
-import { BuildingPanel } from '@/components/game/BuildingPanel';
-import { ReportsPanel } from '@/components/game/ReportsPanel';
-import { MessagesPanel } from '@/components/game/MessagesPanel';
-import { ProfilePanel } from '@/components/game/ProfilePanel';
-import { RankingPanel } from '@/components/game/RankingPanel';
+import dynamic from 'next/dynamic';
+
+const BuildingPanel = dynamic(() => import('@/components/game/BuildingPanel').then(mod => mod.BuildingPanel), { ssr: false });
+const ReportsPanel = dynamic(() => import('@/components/game/ReportsPanel').then(mod => mod.ReportsPanel), { ssr: false });
+const MessagesPanel = dynamic(() => import('@/components/game/MessagesPanel').then(mod => mod.MessagesPanel), { ssr: false });
+const ProfilePanel = dynamic(() => import('@/components/game/ProfilePanel').then(mod => mod.ProfilePanel), { ssr: false });
+const RankingPanel = dynamic(() => import('@/components/game/RankingPanel').then(mod => mod.RankingPanel), { ssr: false });
+const GlobalChat = dynamic(() => import('@/components/game/GlobalChat').then(mod => mod.GlobalChat), { ssr: false });
+const MusicPlayer = dynamic(() => import('@/components/game/MusicPlayer').then(mod => mod.MusicPlayer), { ssr: false });
+
 import { ConstructionQueue } from '@/components/game/ConstructionQueue';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
-import { GlobalChat } from '@/components/game/GlobalChat';
-import { MusicPlayer } from '@/components/game/MusicPlayer';
 import { useVolume } from '@/hooks/useVolume';
 import { MobileSettings } from './MobileSettings';
 import { MobileBottomNav } from './MobileBottomNav';
@@ -48,26 +51,28 @@ export function MobileDashboard() {
 
     useEvents(player?.id, syncWithServer);
 
-    if (!player) return null;
-
-    const handleBuildingClick = (type: BuildingType) => {
+    const handleBuildingClick = useCallback((type: BuildingType) => {
         setSelectedBuilding(type);
         setShowBuildingPanel(true);
-    };
+    }, []);
 
-    const handleOpenProfile = (id: string = player.id) => {
-        setProfilePlayerId(id);
+    const handleOpenProfile = useCallback((id?: string) => {
+        if (!player) return;
+        setProfilePlayerId(id || player.id);
         setShowProfilePanel(true);
-    };
+    }, [player]);
 
-    const handlePanelChange = (panelId: string | null) => {
+    const handlePanelChange = useCallback((panelId: string | null) => {
+        if (!player) return;
         // Reset all panels
         setShowReportsPanel(panelId === 'reports');
         setShowMessagesPanel(panelId === 'messages');
         setShowRankingPanel(panelId === 'ranking');
         setShowSettings(panelId === 'settings');
         if (panelId === 'profile') handleOpenProfile();
-    };
+    }, [player, handleOpenProfile]);
+
+    if (!player) return null;
 
     return (
         <div className={`${styles.mobileContainer} ${view === 'world' ? styles.worldView : ''}`}>
@@ -75,19 +80,19 @@ export function MobileDashboard() {
             <div className={styles.topHUD}>
                 <div className={styles.resourcesBar}>
                     <div className={styles.resItem}>
-                        <img src="/assets/resources/Wood Resource.png" className={styles.resIcon} alt="Wood" />
+                        <img src="/assets/resources/Wood Resource.webp" className={styles.resIcon} alt="Wood" />
                         {Math.floor(player.resources.wood)}
                     </div>
                     <div className={styles.resItem}>
-                        <img src="/assets/resources/Iron_Resource.png" className={styles.resIcon} alt="Iron" />
+                        <img src="/assets/resources/Iron_Resource.webp" className={styles.resIcon} alt="Iron" />
                         {Math.floor(player.resources.iron)}
                     </div>
                     <div className={styles.resItem}>
-                        <img src="/assets/resources/Gold_Resource.png" className={styles.resIcon} alt="Gold" />
+                        <img src="/assets/resources/Gold_Resource.webp" className={styles.resIcon} alt="Gold" />
                         {Math.floor(player.resources.gold)}
                     </div>
                     <div className={styles.resItem}>
-                        <img src="/assets/resources/Population.png" className={styles.resIcon} alt="Pop" />
+                        <img src="/assets/resources/Population.webp" className={styles.resIcon} alt="Pop" />
                         {player.resources.populationUsed}/{player.resources.populationMax}
                     </div>
                 </div>

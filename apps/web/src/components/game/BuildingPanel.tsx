@@ -215,23 +215,23 @@ export function BuildingPanel({ buildingType, player, onClose, onUpgrade }: Buil
                         <h3 className={styles.sectionTitle}>Costo de Mejora</h3>
                         <div className={styles.costs}>
                             <div className={`${styles.costItem} ${canAffordWood ? '' : styles.insufficient}`}>
-                                <img src="/assets/resources/Wood Resource.png" className={styles.costIcon} alt="Madera" />
+                                <img src="/assets/resources/Wood Resource.webp" className={styles.costIcon} alt="Madera" />
                                 <span className={styles.costValue}>{(cost.wood ?? 0).toLocaleString()}</span>
                                 <span className={styles.costLabel}>Madera</span>
                             </div>
                             <div className={`${styles.costItem} ${canAffordIron ? '' : styles.insufficient}`}>
-                                <img src="/assets/resources/Iron_Resource.png" className={styles.costIcon} alt="Hierro" />
+                                <img src="/assets/resources/Iron_Resource.webp" className={styles.costIcon} alt="Hierro" />
                                 <span className={styles.costValue}>{(cost.iron ?? 0).toLocaleString()}</span>
                                 <span className={styles.costLabel}>Hierro</span>
                             </div>
                             <div className={`${styles.costItem} ${canAffordGold ? '' : styles.insufficient}`}>
-                                <img src="/assets/resources/Gold_Resource.png" className={styles.costIcon} alt="Oro" />
+                                <img src="/assets/resources/Gold_Resource.webp" className={styles.costIcon} alt="Oro" />
                                 <span className={styles.costValue}>{(cost.gold ?? 0).toLocaleString()}</span>
                                 <span className={styles.costLabel}>Oro</span>
                             </div>
                             {(cost.population ?? 0) > 0 && (
                                 <div className={`${styles.costItem} ${hasPopulation ? '' : styles.insufficient}`}>
-                                    <img src="/assets/resources/Population.png" className={styles.costIcon} alt="Población" />
+                                    <img src="/assets/resources/Population.webp" className={styles.costIcon} alt="Población" />
                                     <span className={styles.costValue}>{cost.population}</span>
                                     <span className={styles.costLabel}>Población</span>
                                 </div>

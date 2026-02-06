@@ -32,7 +32,7 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroBackground}>
           <img
-            src="/assets/landing/hero-medieval-oil.png" // Using the new oil painting background
+            src="/assets/landing/hero-medieval-oil.webp" // Using the new oil painting background
             alt="Campo de Batalla Etheria"
             className={styles.heroImage}
           />
@@ -82,10 +82,10 @@ export default function Home() {
         <div className={styles.raceGrid}>
           {raceData.map(raceRedux => {
             const imageMap: Record<string, string> = {
-              'humans': 'Human.png',
-              'elves': 'Elf.png',
-              'orcs': 'Orc.png',
-              'dwarves': 'Dwarf.png'
+              'humans': 'Human.webp',
+              'elves': 'Elf.webp',
+              'orcs': 'Orc.webp',
+              'dwarves': 'Dwarf.webp'
             };
             const imageAltMap: Record<string, string> = { // Added alt map for translations
               'humans': 'Humanos',

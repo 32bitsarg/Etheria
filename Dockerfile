@@ -31,11 +31,17 @@ COPY . .
 WORKDIR /app/apps/web
 RUN npx prisma generate
 
-# Build packages first (Core dependencies)
+# Build all workspace packages (dependencies)
 WORKDIR /app
-RUN npm run build:core
-RUN npm run build:races
-RUN npm run build:data
+RUN npm run build -w packages/core \
+    -w packages/races \
+    -w packages/data \
+    -w packages/game-engine \
+    -w packages/combat \
+    -w packages/buildings \
+    -w packages/character \
+    -w packages/classes \
+    -w packages/resources
 
 # Build the Next.js app
 WORKDIR /app/apps/web

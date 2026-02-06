@@ -73,11 +73,12 @@ jobs:
             # Pull latest image
             docker pull ${{ steps.meta.outputs.tags }}
             
-            # Run new container (Clean Internal Mode)
+            # Run new container (Direct Isolation Mode)
             docker run -d \
               --name etheria-web \
               --restart always \
-              --network appwrite \
+              -p 3000:3000 \
+              --network bridge \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e NEXT_PUBLIC_APPWRITE_ENDPOINT="${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}" \

@@ -73,12 +73,15 @@ jobs:
             # Pull latest image
             docker pull ${{ steps.meta.outputs.tags }}
             
-            # Run new container
+            # Run new container with Traefik labels
             docker run -d \
               --name etheria-web \
               --restart always \
-              -p 3000:3000 \
-              --network bridge \
+              --network appwrite_appwrite \
+              --label "traefik.enable=true" \
+              --label "traefik.http.routers.etheria.rule=Host(\`conquestofetheria.com\`) || Host(\`www.conquestofetheria.com\`)" \
+              --label "traefik.http.routers.etheria.entrypoints=appwrite_web" \
+              --label "traefik.http.services.etheria.loadbalancer.server.port=3000" \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e NEXT_PUBLIC_APPWRITE_ENDPOINT="${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}" \

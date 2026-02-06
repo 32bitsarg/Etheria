@@ -49,12 +49,18 @@ jobs:
             NEXT_PUBLIC_APPWRITE_DATABASE_ID=${{ secrets.NEXT_PUBLIC_APPWRITE_DATABASE_ID }}
             NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID=${{ secrets.NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID }}
 
+      - name: Check Secrets
+        run: |
+          if [ -z "${{ secrets.VPS_HOST }}" ]; then echo "VPS_HOST is empty"; exit 1; fi
+          if [ -z "${{ secrets.VPS_USERNAME }}" ]; then echo "VPS_USERNAME is empty"; exit 1; fi
+          if [ -z "${{ secrets.VPS_PASSWORD }}" ]; then echo "VPS_PASSWORD is empty"; exit 1; fi
+
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          host: "${{ secrets.VPS_HOST }}"
+          username: "${{ secrets.VPS_USERNAME }}"
+          password: "${{ secrets.VPS_PASSWORD }}"
           script: |
             # Login to GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin

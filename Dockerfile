@@ -31,17 +31,16 @@ COPY . .
 WORKDIR /app/apps/web
 RUN npx prisma generate
 
-# Build all workspace packages (dependencies)
+# Build all workspace packages in order of dependency
 WORKDIR /app
-RUN npm run build -w packages/core \
-    -w packages/races \
-    -w packages/data \
-    -w packages/game-engine \
-    -w packages/combat \
-    -w packages/buildings \
-    -w packages/character \
-    -w packages/classes \
-    -w packages/resources
+# 1. Base packages (no internal dependencies)
+RUN npm run build -w packages/core -w packages/races -w packages/data -w packages/resources -w packages/classes
+# 2. Level 2 packages (depend on Level 1)
+RUN npm run build -w packages/buildings -w packages/character
+# 3. Level 3 packages (depend on Level 2)
+RUN npm run build -w packages/combat
+# 4. Final engine
+RUN npm run build -w packages/game-engine
 
 # Build the Next.js app
 WORKDIR /app/apps/web
@@ -51,6 +50,7 @@ ARG DATABASE_URL
 ARG JWT_SECRET
 ARG NEXT_PUBLIC_APPWRITE_ENDPOINT
 ARG NEXT_PUBLIC_APPWRITE_PROJECT_ID
+ARG NEXT_PUBLIC_APPWRITE_PROJECT_NAME
 ARG NEXT_PUBLIC_APPWRITE_DATABASE_ID
 ARG NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID
 
@@ -58,8 +58,13 @@ ENV DATABASE_URL=$DATABASE_URL
 ENV JWT_SECRET=$JWT_SECRET
 ENV NEXT_PUBLIC_APPWRITE_ENDPOINT=$NEXT_PUBLIC_APPWRITE_ENDPOINT
 ENV NEXT_PUBLIC_APPWRITE_PROJECT_ID=$NEXT_PUBLIC_APPWRITE_PROJECT_ID
+ENV NEXT_PUBLIC_APPWRITE_PROJECT_NAME=$NEXT_PUBLIC_APPWRITE_PROJECT_NAME
 ENV NEXT_PUBLIC_APPWRITE_DATABASE_ID=$NEXT_PUBLIC_APPWRITE_DATABASE_ID
 ENV NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID=$NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID
+
+# Disable Next.js telemetry and set production flag
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV CI=true
 
 RUN npm run build
 

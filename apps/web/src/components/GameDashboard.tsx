@@ -190,38 +190,6 @@ export function GameDashboard() {
                 </div>
 
                 <div className={styles.topRight}>
-                    {/* Admin/Debug button - remove in production */}
-                    <button
-                        className={styles.menuBtn}
-                        onClick={async () => {
-                            const res = await fetch('/api/v1/admin/grant-resources', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    playerId: player.id,
-                                    wood: 2000,
-                                    iron: 2000,
-                                    gold: 1000
-                                })
-                            });
-                            if (res.ok) {
-                                const data = await res.json();
-                                updatePlayer({
-                                    ...player,
-                                    resources: {
-                                        ...player.resources,
-                                        wood: player.resources.wood + 2000,
-                                        iron: player.resources.iron + 2000,
-                                        gold: player.resources.gold + 1000
-                                    }
-                                });
-                                alert('¡Recursos añadidos! +2000🪵 +2000⛏️ +1000💰');
-                            }
-                        }}
-                        title="[DEV] Añadir recursos"
-                    >
-                        💎
-                    </button>
                     {/* Logout button moved to Sidebar */}
                 </div>
             </div>

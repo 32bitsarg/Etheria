@@ -1,0 +1,14 @@
+node_modules
+apps/web/.next
+apps/web/out
+dist
+npm-debug.log
+.git
+.github
+*.md
+.agent
+.gemini
+docker-compose.yml
+Dockerfile
+.env*
+!.env.example

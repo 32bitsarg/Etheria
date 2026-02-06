@@ -7,10 +7,11 @@ const publicPaths = ['/', '/login', '/register', '/api/v1/auth/login', '/api/v1/
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
-    // 1. Check if the path is public
-    const isPublicPath = publicPaths.some(publicPath =>
-        path === publicPath || path.startsWith('/assets/') || path.startsWith('/_next/')
-    );
+    // 1. Check if the path is public or a static asset
+    const isPublicPath = publicPaths.some(publicPath => path === publicPath) ||
+        path.startsWith('/assets/') ||
+        path.startsWith('/_next/') ||
+        path.match(/\.(json|js|css|png|jpg|jpeg|webp|ico|svg|webmanifest)$/) !== null;
 
     if (isPublicPath) {
         return NextResponse.next();

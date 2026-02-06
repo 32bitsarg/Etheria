@@ -33,7 +33,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             const audio = new Audio('/assets/sounds/sfx/notification.mp3');
             audio.volume = sfxVolume;
             audio.playbackRate = 1.6; // Suena más rápido y corto
-            audio.play().catch(e => console.log('Audio play prevented by browser', e));
+            audio.play().catch(e => {
+                // Silently fail if auto-play is prevented
+            });
         } catch (error) {
             console.error('Error playing notification sound:', error);
         }

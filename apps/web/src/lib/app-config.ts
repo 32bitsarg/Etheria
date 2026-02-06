@@ -40,7 +40,7 @@ export const CHANGELOG: ChangelogEntry[] = [
         changes: [
             {
                 category: 'performance',
-                description: 'Migración masiva de activos: Todas las imágenes JPG/PNG convertidas a WebP, reduciendo el peso de carga en un ~90%.',
+                description: 'Migración masiva de activos: Todas las imágenes JPG/PNG convertidas a WebP (incluyendo el Mapamundi), reduciendo el peso de carga en un ~90%.',
             },
             {
                 category: 'performance',

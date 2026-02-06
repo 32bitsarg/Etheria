@@ -57,9 +57,7 @@ export function TileMapCanvas({ width = 30, height = 20 }: TileMapProps) {
 
         const cols = Math.floor(tileset.width / TILE_SIZE);
 
-        // Dibujar Capas (Invertimos: [Rocks, Grass] -> [Grass, Rocks])
         const layersToDraw = [...mapJson.layers].reverse();
-        console.log('Rendering Layers (Bottom to Top):', layersToDraw.map(l => l.name));
 
         layersToDraw.forEach(layer => {
             layer.tiles.forEach(tile => {

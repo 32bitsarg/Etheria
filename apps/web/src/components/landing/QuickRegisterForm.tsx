@@ -47,7 +47,6 @@ export function QuickRegisterForm() {
         }
 
         // Placeholder for registration logic
-        console.log('Registering:', { email, username, password });
         alert('¡Bienvenido, noble Lord! Tu solicitud ha sido enviada a los escribas.');
     };
 

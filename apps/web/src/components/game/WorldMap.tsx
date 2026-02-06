@@ -229,7 +229,7 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                     >
                         <div className={styles.islandContainer}>
                             <img
-                                src={`/assets/islands/island${island.type}.png`}
+                                src={`/assets/islands/island${island.type}.webp`}
                                 className={styles.islandImg}
                                 style={{ transform: `rotate(${island.rotation}deg)` }}
                                 alt="Isla"
@@ -319,18 +319,16 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                     options={[
                         {
                             label: 'Atacar', icon: '⚔️', action: () => {
-                                console.log('Abriendo panel de ataque para:', selectedCity.city.name);
                                 setShowAttackPanel({ id: selectedCity.city.id, name: selectedCity.city.name });
                             }
                         },
                         {
                             label: 'Perfil', icon: '👤', action: () => {
-                                console.log('Abriendo perfil de:', selectedCity.city.player.userId);
                                 if (onViewProfile) onViewProfile(selectedCity.city.player.userId);
                             }
                         },
-                        { label: 'Espiar', icon: '🕵️', action: () => console.log('Espiar a', selectedCity.city.name) },
-                        { label: 'Comerciar', icon: '⚖️', action: () => console.log('Comerciar con', selectedCity.city.name) },
+                        { label: 'Espiar', icon: '🕵️', action: () => { } },
+                        { label: 'Comerciar', icon: '⚖️', action: () => { } },
                     ]}
                 />
             )}
@@ -342,7 +340,6 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                     availableUnits={availableUnits}
                     onClose={() => setShowAttackPanel(null)}
                     onAttackStarted={(data) => {
-                        console.log('Ataque enviado:', data);
                         addToast(`¡Ataque enviado! Llegada en ${data.travelTimeSeconds}s`, 'success');
                     }}
                 />

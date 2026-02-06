@@ -49,8 +49,6 @@ export function MusicPlayer({ src, autoPlay = true }: MusicPlayerProps) {
             playPromise
                 .then(() => setIsPlaying(true))
                 .catch(error => {
-                    console.log("Auto-play prevented. Waiting for interaction.");
-
                     const playOnInteraction = () => {
                         if (audioRef.current) {
                             audioRef.current.play()
@@ -79,10 +77,8 @@ export function MusicPlayer({ src, autoPlay = true }: MusicPlayerProps) {
             if (!audioRef.current) return;
 
             if (document.hidden) {
-                console.log("Tab hidden - Pausing music");
                 audioRef.current.pause();
             } else {
-                console.log("Tab visible - Resuming if autoPlay");
                 if (autoPlay) {
                     audioRef.current.play()
                         .then(() => setIsPlaying(true))

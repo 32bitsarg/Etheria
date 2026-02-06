@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, message: 'Entrenamiento finalizado' });
 
     } catch (error) {
-        console.error('V1 Finish Training error:', error.message);
+        console.error('V1 Finish Training error:', error instanceof Error ? error.message : error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

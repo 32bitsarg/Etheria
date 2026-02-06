@@ -73,15 +73,11 @@ jobs:
             # Pull latest image
             docker pull ${{ steps.meta.outputs.tags }}
             
-            # Run new container (High-Priority Bypass)
+            # Run new container (Clean Internal Mode)
             docker run -d \
               --name etheria-web \
               --restart always \
               --network appwrite \
-              --label 'traefik.enable=true' \
-              --label 'traefik.http.routers.z-etheria.rule=Host(`conquestofetheria.com`) || Host(`www.conquestofetheria.com`)' \
-              --label 'traefik.http.routers.z-etheria.priority=20000' \
-              --label 'traefik.http.services.z-etheria.loadbalancer.server.port=3000' \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e NEXT_PUBLIC_APPWRITE_ENDPOINT="${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}" \

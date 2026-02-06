@@ -73,17 +73,17 @@ jobs:
             # Pull latest image
             docker pull ${{ steps.meta.outputs.tags }}
             
-            # Run new container (Clean Domain Mode via Traefik)
+            # Run new container (Fixed Traefik Routing)
             docker run -d \
               --name etheria-web \
               --restart always \
               --network appwrite \
-              --label "traefik.enable=true" \
-              --label "traefik.http.routers.etheria.rule=Host(\`conquestofetheria.com\`) || Host(\`www.conquestofetheria.com\`)" \
-              --label "traefik.http.routers.etheria.entrypoints=web,websecure" \
-              --label "traefik.http.routers.etheria.priority=2000" \
-              --label "traefik.http.routers.etheria.tls=true" \
-              --label "traefik.http.services.etheria.loadbalancer.server.port=3000" \
+              --label 'traefik.enable=true' \
+              --label 'traefik.http.routers.etheria-router.rule=Host("conquestofetheria.com") || Host("www.conquestofetheria.com")' \
+              --label 'traefik.http.routers.etheria-router.entrypoints=web,websecure' \
+              --label 'traefik.http.routers.etheria-router.priority=3000' \
+              --label 'traefik.http.routers.etheria-router.tls=true' \
+              --label 'traefik.http.services.etheria-service.loadbalancer.server.port=3000' \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e NEXT_PUBLIC_APPWRITE_ENDPOINT="${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}" \

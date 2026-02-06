@@ -1,0 +1,101 @@
+.offlineOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.parchment {
+    max-width: 400px;
+    width: 100%;
+    background: #e7e5e4;
+    padding: 40px;
+    border-radius: 4px;
+    position: relative;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 0 40px rgba(139, 92, 26, 0.2);
+    border: 2px solid #8b5e1a;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Rugged edges effect */
+.parchment::before,
+.parchment::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 100%;
+    top: 0;
+    background: inherit;
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-family: var(--font-heading);
+    color: #44403c;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.message {
+    color: #57534e;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #8b5e1a, transparent);
+    margin: 20px 0;
+}
+
+.submessage {
+    color: #78716c;
+    font-style: italic;
+    margin-bottom: 30px;
+}
+
+.retryBtn {
+    background: #7f1d1d;
+    color: #e7e5e4;
+    border: none;
+    padding: 12px 24px;
+    font-family: var(--font-heading);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+    letter-spacing: 1px;
+}
+
+.retryBtn:hover {
+    background: #991b1b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

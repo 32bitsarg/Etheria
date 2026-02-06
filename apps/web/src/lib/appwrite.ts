@@ -1,4 +1,4 @@
-import { Client, Databases, Account } from 'appwrite';
+import { Client, Databases, Account, Messaging } from 'appwrite';
 
 // Appwrite Client Configuration
 const client = new Client();
@@ -10,6 +10,7 @@ client
 // Services
 export const databases = new Databases(client);
 export const account = new Account(client);
+export const messaging = new Messaging(client);
 
 // Export client for Realtime subscriptions
 export { client };

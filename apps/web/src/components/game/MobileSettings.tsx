@@ -65,6 +65,21 @@ export function MobileSettings({ onClose, musicVolume, sfxVolume, onMusicVolumeC
                         </div>
                     </div>
 
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Notificaciones</h3>
+                        <button
+                            className={styles.notificationBtn}
+                            onClick={() => {
+                                import('../ui/PushNotificationManager').then(module => {
+                                    module.triggerPushPermission();
+                                });
+                            }}
+                        >
+                            <span className={styles.btnIcon}>🔔</span>
+                            <span className={styles.btnText}>Activar Avisos de Batalla</span>
+                        </button>
+                    </div>
+
                     <div className={styles.divider} />
 
                     <div className={styles.systemSection}>

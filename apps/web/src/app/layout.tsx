@@ -19,10 +19,23 @@ const medievalSharp = MedievalSharp({
 });
 
 export const metadata: Metadata = {
-  title: `${APP_CONFIG.name} - Juego de Estrategia`,
+  title: `${APP_CONFIG.name} - ${APP_CONFIG.description}`,
   description: APP_CONFIG.description,
+  manifest: '/manifest.json',
+  themeColor: '#d4af37',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   icons: {
-    icon: APP_CONFIG.icon,
+    icon: [
+      { url: APP_CONFIG.icon, type: 'image/webp' },
+    ],
+    apple: [
+      { url: APP_CONFIG.icon, sizes: '180x180', type: 'image/webp' },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: APP_CONFIG.name,
   },
 };
 
@@ -33,6 +46,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${cinzelDecorative.variable} ${medievalSharp.variable}`} suppressHydrationWarning>
+      <head>
+        {/* iOS Splash Screens */}
+        <link rel="apple-touch-startup-image" href="/assets/pwa/ios/apple-splash-1290-2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/assets/pwa/ios/apple-splash-1170-2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/assets/pwa/ios/apple-splash-1284-2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+      </head>
       <body>
         <Providers>
           {children}

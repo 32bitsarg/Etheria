@@ -12,13 +12,18 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Safety check: Don't initialize if mandatory values are missing
+const isConfigValid = !!(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
+
+const app = typeof window !== 'undefined' && isConfigValid
+    ? (getApps().length > 0 ? getApp() : initializeApp(firebaseConfig))
+    : null;
 
 // Initialize Firebase Messaging
-export const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
+export const messaging = (typeof window !== 'undefined' && app) ? getMessaging(app) : null;
 
 // Initialize Analytics
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && app) {
     isSupported().then(yes => yes && getAnalytics(app));
 }
 

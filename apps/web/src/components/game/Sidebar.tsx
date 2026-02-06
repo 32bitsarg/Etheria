@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo, useMemo } from 'react';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -21,26 +21,26 @@ interface SidebarProps {
 }
 
 const RACE_IMAGES: Record<string, string> = {
-    elfo: '/assets/races/Elf.png',
-    humano: '/assets/races/Human.png',
-    orco: '/assets/races/Orc.png',
-    enano: '/assets/races/Dwarf.png',
+    elfo: '/assets/races/Elf.webp',
+    humano: '/assets/races/Human.webp',
+    orco: '/assets/races/Orc.webp',
+    enano: '/assets/races/Dwarf.webp',
 };
 
-export function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
-    const raceImage = RACE_IMAGES[race.toLowerCase()] || RACE_IMAGES['humano'];
+    const raceImage = useMemo(() => RACE_IMAGES[race.toLowerCase()] || RACE_IMAGES['humano'], [race]);
 
-    const menuItems = [
-        { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.png', view: 'city' as const },
-        { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.png', view: 'world' as const },
-        { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.png', action: onMessagesClick },
-        { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.png', action: onReportsClick },
-        { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.png', action: onRankingClick },
-        { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.png', action: onProfileClick },
-    ];
+    const menuItems = useMemo(() => [
+        { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.webp', view: 'city' as const },
+        { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.webp', view: 'world' as const },
+        { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.webp', action: onMessagesClick },
+        { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.webp', action: onReportsClick },
+        { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.webp', action: onRankingClick },
+        { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.webp', action: onProfileClick },
+    ], [onMessagesClick, onReportsClick, onRankingClick, onProfileClick]);
 
     return (
         <div className={styles.sidebar}>
@@ -84,7 +84,7 @@ export function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange,
                     onClick={() => setShowSettings(!showSettings)}
                 >
                     <div className={styles.menuIconFrame}>
-                        <img src="/assets/hud/settingsicon.png" alt="" className={styles.iconImage} />
+                        <img src="/assets/hud/settingsicon.webp" alt="" className={styles.iconImage} />
                     </div>
                     <span className={styles.menuLabel}>Ajustes</span>
                 </button>
@@ -94,7 +94,7 @@ export function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange,
                     onClick={onLogout}
                 >
                     <div className={styles.menuIconFrame}>
-                        <img src="/assets/hud/logouticon.png" alt="" className={styles.iconImage} />
+                        <img src="/assets/hud/logouticon.webp" alt="" className={styles.iconImage} />
                     </div>
                     <span className={styles.menuLabel}>Salir</span>
                 </button>
@@ -171,6 +171,7 @@ export function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange,
             )}
         </div>
     );
-}
+});
+
 
 

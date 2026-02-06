@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useMemo } from 'react';
 import { BuildingType, BuildingState, ConstructionQueueItem, BUILDING_INFO } from '@lootsystem/game-engine';
 import styles from './CityMap.module.css';
 
@@ -56,18 +56,18 @@ const BUILDING_ICONS: Record<BuildingType, string> = {
 };
 
 const BUILDING_SPRITES: Partial<Record<BuildingType, string>> = {
-    [BuildingType.TOWN_HALL]: '/assets/buildings/townhall.png',
-    [BuildingType.FARM]: '/assets/buildings/farm.png',
-    [BuildingType.BARRACKS]: '/assets/buildings/barracks.png',
-    [BuildingType.LUMBER_MILL]: '/assets/buildings/sawmill.png',
-    [BuildingType.WAREHOUSE]: '/assets/buildings/warehouse.png',
-    [BuildingType.ALLIANCE_CENTER]: '/assets/buildings/alliance.png',
-    [BuildingType.IRON_MINE]: '/assets/buildings/ironmine.png',
-    [BuildingType.GOLD_MINE]: '/assets/buildings/goldmine.png',
+    [BuildingType.TOWN_HALL]: '/assets/buildings/townhall.webp',
+    [BuildingType.FARM]: '/assets/buildings/farm.webp',
+    [BuildingType.BARRACKS]: '/assets/buildings/barracks.webp',
+    [BuildingType.LUMBER_MILL]: '/assets/buildings/sawmill.webp',
+    [BuildingType.WAREHOUSE]: '/assets/buildings/warehouse.webp',
+    [BuildingType.ALLIANCE_CENTER]: '/assets/buildings/alliance.webp',
+    [BuildingType.IRON_MINE]: '/assets/buildings/ironmine.webp',
+    [BuildingType.GOLD_MINE]: '/assets/buildings/goldmine.webp',
 };
 
 
-export function CityMap({ buildings, queue, onBuildingClick, isMobile = false }: CityMapProps) {
+export const CityMap = memo(function CityMap({ buildings, queue, onBuildingClick, isMobile = false }: CityMapProps) {
     const [currentTime, setCurrentTime] = useState(Date.now());
 
     useEffect(() => {
@@ -77,44 +77,43 @@ export function CityMap({ buildings, queue, onBuildingClick, isMobile = false }:
         return () => clearInterval(interval);
     }, []);
 
-    const getQueueItem = (type: BuildingType) =>
-        queue.find(item => item.buildingType === type);
-
-    const getBuilding = (type: BuildingType) =>
-        buildings.find(b => b.type === type);
-
-    const layout = isMobile ? MOBILE_LAYOUT : DESKTOP_LAYOUT;
+    const layout = useMemo(() => isMobile ? MOBILE_LAYOUT : DESKTOP_LAYOUT, [isMobile]);
 
     return (
         <div className={styles.mapWrapper}>
             <div className={styles.ambientBg} />
 
             <div className={styles.buildingsContainer}>
-                {layout.map((item) => (
-                    <div
-                        key={`${item.type}-${isMobile ? 'mobile' : 'desktop'}`}
-                        style={{
-                            position: 'absolute',
-                            left: item.x,
-                            top: item.y,
-                            transform: `translate(calc(-50% + ${item.offsetX || '0px'}), calc(-50% + ${item.offsetY || '0px'}))`,
-                            pointerEvents: 'auto'
-                        }}
-                    >
-                        <BuildingNode
-                            type={item.type}
-                            building={getBuilding(item.type)}
-                            queueItem={getQueueItem(item.type)}
-                            currentTime={currentTime}
-                            onClick={() => onBuildingClick(item.type)}
-                            size={item.size}
-                        />
-                    </div>
-                ))}
+                {layout.map((item) => {
+                    const queueItem = queue.find(q => q.buildingType === item.type);
+                    const building = buildings.find(b => b.type === item.type);
+
+                    return (
+                        <div
+                            key={`${item.type}-${isMobile ? 'mobile' : 'desktop'}`}
+                            style={{
+                                position: 'absolute',
+                                left: item.x,
+                                top: item.y,
+                                transform: `translate(calc(-50% + ${item.offsetX || '0px'}), calc(-50% + ${item.offsetY || '0px'}))`,
+                                pointerEvents: 'auto'
+                            }}
+                        >
+                            <BuildingNode
+                                type={item.type}
+                                building={building}
+                                queueItem={queueItem}
+                                currentTime={currentTime}
+                                onClick={() => onBuildingClick(item.type)}
+                                size={item.size}
+                            />
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
-}
+});
 
 
 interface BuildingNodeProps {
@@ -126,7 +125,7 @@ interface BuildingNodeProps {
     size: 'large' | 'medium' | 'small';
 }
 
-function BuildingNode({ type, building, queueItem, currentTime, onClick, size }: BuildingNodeProps) {
+const BuildingNode = memo(function BuildingNode({ type, building, queueItem, currentTime, onClick, size }: BuildingNodeProps) {
     const info = BUILDING_INFO[type];
     const level = building?.level ?? 0;
     const isLocked = level === 0;
@@ -177,4 +176,19 @@ function BuildingNode({ type, building, queueItem, currentTime, onClick, size }:
             </div>
         </button>
     );
-}
+}, (prev, next) => {
+    // Custom comparison to avoid re-rendering if not constructing
+    if (prev.queueItem !== next.queueItem) return false;
+    if (prev.building !== next.building) return false;
+    if (prev.size !== next.size) return false;
+    if (prev.onClick !== next.onClick) return false;
+
+    // If it's constructing, we NEED currentTime updates
+    if (next.queueItem) {
+        return prev.currentTime === next.currentTime;
+    }
+
+    // If not constructing, we DON'T care about currentTime
+    return true;
+});
+

@@ -1,25 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEvents } from '@/hooks/useEvents'; // Added this line
 import { CityMap } from '@/components/game/CityMap';
 import { WorldMap } from '@/components/game/WorldMap';
 import { TileMapCanvas } from '@/components/game/TileMapCanvas';
-import { BuildingPanel } from '@/components/game/BuildingPanel';
+import dynamic from 'next/dynamic';
+
 import { ConstructionQueue } from '@/components/game/ConstructionQueue';
-import { GlobalChat } from '@/components/game/GlobalChat';
 import { AnimatedResource } from '@/components/game/AnimatedResource';
 import { MusicPlayer } from '@/components/game/MusicPlayer';
 import { useVolume } from '@/hooks/useVolume';
 import { Sidebar } from '@/components/game/Sidebar';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { UnitsDisplay } from '@/components/game/UnitsDisplay';
-import { ReportsPanel } from '@/components/game/ReportsPanel';
 import { CombatMovements } from '@/components/game/CombatMovements';
-import { MessagesPanel } from '@/components/game/MessagesPanel';
-import { ProfilePanel } from '@/components/game/ProfilePanel';
-import { RankingPanel } from '@/components/game/RankingPanel';
+
+const BuildingPanel = dynamic(() => import('@/components/game/BuildingPanel').then(mod => mod.BuildingPanel), { ssr: false });
+const GlobalChat = dynamic(() => import('@/components/game/GlobalChat').then(mod => mod.GlobalChat), { ssr: false });
+const ReportsPanel = dynamic(() => import('@/components/game/ReportsPanel').then(mod => mod.ReportsPanel), { ssr: false });
+const MessagesPanel = dynamic(() => import('@/components/game/MessagesPanel').then(mod => mod.MessagesPanel), { ssr: false });
+const ProfilePanel = dynamic(() => import('@/components/game/ProfilePanel').then(mod => mod.ProfilePanel), { ssr: false });
+const RankingPanel = dynamic(() => import('@/components/game/RankingPanel').then(mod => mod.RankingPanel), { ssr: false });
 import {
     processTick,
     calculateProductionRates,
@@ -68,30 +71,31 @@ export function GameDashboard() {
         return () => clearInterval(interval);
     }, [player, updatePlayer]);
 
+    const handleBuildingClick = useCallback((type: BuildingType) => {
+        setSelectedBuilding(type);
+        setShowBuildingPanel(true);
+    }, []);
+
+    const handleOpenProfile = useCallback((id?: string) => {
+        if (!player) return;
+        setProfilePlayerId(id || player.id);
+        setShowProfilePanel(true);
+    }, [player]);
+
+    const handleCancelConstruction = useCallback(async (queueItemId: string) => {
+        await cancelBuildingUpgrade(queueItemId);
+    }, [cancelBuildingUpgrade]);
+
+    const handleInstantComplete = useCallback(async (queueItemId: string) => {
+        await instantCompleteBuilding(queueItemId);
+    }, [instantCompleteBuilding]);
+
     if (!player) return null;
 
     const rates = calculateProductionRates(player);
     const limits = getStorageLimits(player);
     const maxPop = getMaxPopulation(player);
     const race = RAZAS[player.race];
-
-    const handleBuildingClick = (type: BuildingType) => {
-        setSelectedBuilding(type);
-        setShowBuildingPanel(true);
-    };
-
-    const handleOpenProfile = (id: string = player.id) => {
-        setProfilePlayerId(id);
-        setShowProfilePanel(true);
-    };
-
-    const handleCancelConstruction = async (queueItemId: string) => {
-        await cancelBuildingUpgrade(queueItemId);
-    };
-
-    const handleInstantComplete = async (queueItemId: string) => {
-        await instantCompleteBuilding(queueItemId);
-    };
 
     // Calcular porcentajes para las barras de recursos
     const woodPercent = Math.min(100, (player.resources.wood / limits.maxWood) * 100);
@@ -113,7 +117,7 @@ export function GameDashboard() {
                 <div className={styles.resourcesBar}>
                     <div className={styles.resourceItem}>
                         <div className={styles.resourceHeader}>
-                            <img src="/assets/resources/Wood Resource.png" className={styles.resourceIcon} alt="Wood" />
+                            <img src="/assets/resources/Wood Resource.webp" className={styles.resourceIcon} alt="Wood" />
                             <span className={styles.resourceValue}>
                                 <AnimatedResource
                                     value={player.resources.wood}
@@ -133,7 +137,7 @@ export function GameDashboard() {
 
                     <div className={styles.resourceItem}>
                         <div className={styles.resourceHeader}>
-                            <img src="/assets/resources/Iron_Resource.png" className={styles.resourceIcon} alt="Iron" />
+                            <img src="/assets/resources/Iron_Resource.webp" className={styles.resourceIcon} alt="Iron" />
                             <span className={styles.resourceValue}>
                                 <AnimatedResource
                                     value={player.resources.iron}
@@ -153,7 +157,7 @@ export function GameDashboard() {
 
                     <div className={styles.resourceItem}>
                         <div className={styles.resourceHeader}>
-                            <img src="/assets/resources/Gold_Resource.png" className={styles.resourceIcon} alt="Gold" />
+                            <img src="/assets/resources/Gold_Resource.webp" className={styles.resourceIcon} alt="Gold" />
                             <span className={styles.resourceValue}>
                                 <AnimatedResource
                                     value={player.resources.gold}
@@ -175,7 +179,7 @@ export function GameDashboard() {
 
                     <div className={styles.resourceItem}>
                         <div className={styles.resourceHeader}>
-                            <img src="/assets/resources/Population.png" className={styles.resourceIcon} alt="Pop" />
+                            <img src="/assets/resources/Population.webp" className={styles.resourceIcon} alt="Pop" />
                             <span className={styles.resourceValue}>
                                 {availablePopulation}/{maxPop}
                             </span>

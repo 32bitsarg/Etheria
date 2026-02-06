@@ -24,7 +24,7 @@
     transition: transform 0.05s linear;
     will-change: transform;
     z-index: 1;
-    background-image: url('/assets/islands/water.png');
+    background-image: url('/assets/islands/water.webp');
     background-repeat: repeat;
 }
 
@@ -32,7 +32,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url('/assets/islands/water.png');
+    background-image: url('/assets/islands/water.webp');
     background-repeat: repeat;
     background-size: 2717px 2717px;
     opacity: 0.4;

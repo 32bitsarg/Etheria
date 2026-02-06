@@ -150,15 +150,15 @@ export function ReportsPanel({ playerId, onClose }: ReportsPanelProps) {
                                     <div className={styles.lootTitle}>Botín Capturado</div>
                                     <div className={styles.lootGrid}>
                                         <div className={styles.lootItem}>
-                                            <img src="/assets/resources/Wood Resource.png" className={styles.lootIcon} alt="Wood" />
+                                            <img src="/assets/resources/Wood Resource.webp" className={styles.lootIcon} alt="Wood" />
                                             <span>{Math.floor(selectedReport.lootedWood)}</span>
                                         </div>
                                         <div className={styles.lootItem}>
-                                            <img src="/assets/resources/Iron_Resource.png" className={styles.lootIcon} alt="Iron" />
+                                            <img src="/assets/resources/Iron_Resource.webp" className={styles.lootIcon} alt="Iron" />
                                             <span>{Math.floor(selectedReport.lootedIron)}</span>
                                         </div>
                                         <div className={styles.lootItem}>
-                                            <img src="/assets/resources/Gold_Resource.png" className={styles.lootIcon} alt="Gold" />
+                                            <img src="/assets/resources/Gold_Resource.webp" className={styles.lootIcon} alt="Gold" />
                                             <span>{Math.floor(selectedReport.lootedGold)}</span>
                                         </div>
                                     </div>

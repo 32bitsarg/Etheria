@@ -20,10 +20,10 @@ interface RankingPanelProps {
 }
 
 const RACE_IMAGES: Record<string, string> = {
-    elfo: '/assets/races/Elf.png',
-    humano: '/assets/races/Human.png',
-    orco: '/assets/races/Orc.png',
-    enano: '/assets/races/Dwarf.png',
+    elfo: '/assets/races/Elf.webp',
+    humano: '/assets/races/Human.webp',
+    orco: '/assets/races/Orc.webp',
+    enano: '/assets/races/Dwarf.webp',
 };
 
 export function RankingPanel({ onClose, onPlayerClick }: RankingPanelProps) {
@@ -61,7 +61,7 @@ export function RankingPanel({ onClose, onPlayerClick }: RankingPanelProps) {
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
                     <h2 className={styles.title}>
-                        <img src="/assets/hud/rankicon.png" alt="" style={{ width: '32px' }} />
+                        <img src="/assets/hud/rankicon.webp" alt="" style={{ width: '32px' }} />
                         Clasificación de Etheria
                     </h2>
                     <button className={styles.closeBtn} onClick={onClose}>&times;</button>

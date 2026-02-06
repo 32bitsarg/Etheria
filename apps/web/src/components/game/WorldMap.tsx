@@ -275,7 +275,7 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                                             <span className={styles.villageName}>{city.name}</span>
                                         </div>
                                         <img
-                                            src="/assets/islands/villages.png"
+                                            src="/assets/islands/villages.webp"
                                             className={styles.villageImg}
                                             alt="Aldea"
                                         />

@@ -19,7 +19,7 @@ export function MobileSettings({ onClose, musicVolume, sfxVolume, onMusicVolumeC
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
-                    <img src="/assets/hud/settingsicon.png" className={styles.headerIcon} alt="" />
+                    <img src="/assets/hud/settingsicon.webp" className={styles.headerIcon} alt="" />
                     <h2 className={styles.title}>Ajustes del Reino</h2>
                     <button className={styles.closeBtn} onClick={onClose}>&times;</button>
                 </div>
@@ -69,7 +69,7 @@ export function MobileSettings({ onClose, musicVolume, sfxVolume, onMusicVolumeC
 
                     <div className={styles.systemSection}>
                         <button className={styles.logoutBtn} onClick={logout}>
-                            <img src="/assets/hud/logouticon.png" className={styles.logoutIcon} alt="" />
+                            <img src="/assets/hud/logouticon.webp" className={styles.logoutIcon} alt="" />
                             <div className={styles.logoutContent}>
                                 <span className={styles.logoutTitle}>Cerrar Sesión</span>
                                 <span className={styles.logoutDesc}>Abandonar el reino de Etheria</span>

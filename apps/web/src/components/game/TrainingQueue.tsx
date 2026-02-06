@@ -58,7 +58,7 @@ export function TrainingQueue({ queue, onCancel, onFinishNow, onComplete }: Trai
         return (
             <div className={styles.containerMinimal}>
                 <div className={styles.emptyBadge}>
-                    <img src="/assets/buildings/barracks.png" className={styles.headerIconImg} alt="Train" />
+                    <img src="/assets/buildings/barracks.webp" className={styles.headerIconImg} alt="Train" />
                     <span className={`${styles.emptyText} queue-text-stable`}>0</span>
                 </div>
             </div>
@@ -68,7 +68,7 @@ export function TrainingQueue({ queue, onCancel, onFinishNow, onComplete }: Trai
     return (
         <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed}`}>
             <div className={styles.header} onClick={() => setIsExpanded(!isExpanded)}>
-                <img src="/assets/buildings/barracks.png" className={styles.headerIconImg} alt="Train" />
+                <img src="/assets/buildings/barracks.webp" className={styles.headerIconImg} alt="Train" />
                 <span className={`${styles.queueCount} queue-text-stable`}>{queue.length} Encargos</span>
                 <span className={styles.expandIcon}>{isExpanded ? '▼' : '◀'}</span>
             </div>

@@ -130,16 +130,16 @@ export function BarracksPanel() {
 
                             <div className={styles.costRow}>
                                 <div className={styles.resourceCost}>
-                                    <img src="/assets/resources/Wood Resource.png" alt="Wood" /> {cost.wood}
+                                    <img src="/assets/resources/Wood Resource.webp" alt="Wood" /> {cost.wood}
                                 </div>
                                 <div className={styles.resourceCost}>
-                                    <img src="/assets/resources/Iron_Resource.png" alt="Iron" /> {cost.iron}
+                                    <img src="/assets/resources/Iron_Resource.webp" alt="Iron" /> {cost.iron}
                                 </div>
                                 <div className={styles.resourceCost}>
-                                    <img src="/assets/resources/Gold_Resource.png" alt="Gold" /> {cost.gold}
+                                    <img src="/assets/resources/Gold_Resource.webp" alt="Gold" /> {cost.gold}
                                 </div>
                                 <div className={styles.resourceCost}>
-                                    <img src="/assets/resources/Population.png" alt="Pop" /> {cost.population}
+                                    <img src="/assets/resources/Population.webp" alt="Pop" /> {cost.population}
                                 </div>
                             </div>
 

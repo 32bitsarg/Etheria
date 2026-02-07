@@ -14,6 +14,7 @@ const MessagesPanel = dynamic(() => import('@/components/game/MessagesPanel').th
 const ProfilePanel = dynamic(() => import('@/components/game/ProfilePanel').then(mod => mod.ProfilePanel), { ssr: false });
 const RankingPanel = dynamic(() => import('@/components/game/RankingPanel').then(mod => mod.RankingPanel), { ssr: false });
 const GlobalChat = dynamic(() => import('@/components/game/GlobalChat').then(mod => mod.GlobalChat), { ssr: false });
+const MarketDashboard = dynamic(() => import('@/components/game/market/MarketDashboard').then(mod => mod.MarketDashboard), { ssr: false });
 const MusicPlayer = dynamic(() => import('@/components/game/MusicPlayer').then(mod => mod.MusicPlayer), { ssr: false });
 
 import { ConstructionQueue } from '@/components/game/ConstructionQueue';
@@ -44,6 +45,7 @@ export function MobileDashboard() {
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
     const [showProfilePanel, setShowProfilePanel] = useState(false);
     const [showRankingPanel, setShowRankingPanel] = useState(false);
+    const [showMarketPanel, setShowMarketPanel] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
@@ -68,6 +70,7 @@ export function MobileDashboard() {
         setShowReportsPanel(panelId === 'reports');
         setShowMessagesPanel(panelId === 'messages');
         setShowRankingPanel(panelId === 'ranking');
+        setShowMarketPanel(panelId === 'market');
         setShowSettings(panelId === 'settings');
         if (panelId === 'profile') handleOpenProfile();
     }, [player, handleOpenProfile]);
@@ -88,8 +91,16 @@ export function MobileDashboard() {
                         {Math.floor(player.resources.iron)}
                     </div>
                     <div className={styles.resItem}>
-                        <img src="/assets/resources/Gold_Resource.webp" className={styles.resIcon} alt="Gold" />
+                        <img src="/assets/resources/Gold_Resource.webp" className={styles.resIcon} alt="Oro" />
                         {Math.floor(player.resources.gold)}
+                    </div>
+                    <div className={styles.resItem}>
+                        <span style={{ fontSize: '1rem' }}>💰</span>
+                        {Math.floor(player.resources.doblones || 0)}
+                    </div>
+                    <div className={styles.resItem}>
+                        <span style={{ fontSize: '1rem' }}>✨</span>
+                        {Math.floor(player.resources.etherFragments || 0)}
                     </div>
                     <div className={styles.resItem}>
                         <img src="/assets/resources/Population.webp" className={styles.resIcon} alt="Pop" />
@@ -146,6 +157,16 @@ export function MobileDashboard() {
                     onClose={() => setShowRankingPanel(false)}
                     onPlayerClick={handleOpenProfile}
                 />
+            )}
+
+            {showMarketPanel && (
+                <div className={styles.overlayPanel}>
+                    <div className={styles.panelHeader}>
+                        <h3>Mercado Imperial</h3>
+                        <button className={styles.closeBtn} onClick={() => setShowMarketPanel(false)}>✕</button>
+                    </div>
+                    <MarketDashboard />
+                </div>
             )}
 
             {showProfilePanel && profilePlayerId && (

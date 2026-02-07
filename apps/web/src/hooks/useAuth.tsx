@@ -92,6 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 wood: p.wood,
                 iron: p.iron,
                 gold: p.gold,
+                doblones: p.doblones,
+                etherFragments: p.etherFragments,
                 populationUsed: p.populationUsed,
                 populationMax: p.populationMax
             },

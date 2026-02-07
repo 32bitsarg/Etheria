@@ -23,6 +23,7 @@ const ReportsPanel = dynamic(() => import('@/components/game/ReportsPanel').then
 const MessagesPanel = dynamic(() => import('@/components/game/MessagesPanel').then(mod => mod.MessagesPanel), { ssr: false });
 const ProfilePanel = dynamic(() => import('@/components/game/ProfilePanel').then(mod => mod.ProfilePanel), { ssr: false });
 const RankingPanel = dynamic(() => import('@/components/game/RankingPanel').then(mod => mod.RankingPanel), { ssr: false });
+const MarketDashboard = dynamic(() => import('@/components/game/market/MarketDashboard').then(mod => mod.MarketDashboard), { ssr: false });
 import {
     processTick,
     calculateProductionRates,
@@ -52,6 +53,7 @@ export function GameDashboard() {
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
     const [showProfilePanel, setShowProfilePanel] = useState(false);
     const [showRankingPanel, setShowRankingPanel] = useState(false);
+    const [showMarketPanel, setShowMarketPanel] = useState(false);
     const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
     const [view, setView] = useState<'city' | 'world'>('city');
 
@@ -155,9 +157,9 @@ export function GameDashboard() {
                         <span className={styles.resourceRate}>+{rates.ironPerHour}/h</span>
                     </div>
 
-                    <div className={styles.resourceItem}>
+                    <div className={styles.resourceItem} title="Oro">
                         <div className={styles.resourceHeader}>
-                            <img src="/assets/resources/Gold_Resource.webp" className={styles.resourceIcon} alt="Gold" />
+                            <img src="/assets/resources/Gold_Resource.webp" className={styles.resourceIcon} alt="Oro" />
                             <span className={styles.resourceValue}>
                                 <AnimatedResource
                                     value={player.resources.gold}
@@ -173,6 +175,42 @@ export function GameDashboard() {
                             />
                         </div>
                         <span className={styles.resourceRate}>+{rates.goldPerHour}/h</span>
+                    </div>
+
+                    <div className={styles.resourceItem} title="Doblones (Mercado)">
+                        <div className={styles.resourceHeader}>
+                            <img src="/assets/hud/doblones.webp" className={styles.resourceIcon} alt="Doblones" />
+                            <span className={styles.resourceValue}>
+                                <AnimatedResource
+                                    value={player.resources.doblones || 0}
+                                    ratePerHour={rates.doblonesPerHour}
+                                    formatFn={formatNumber}
+                                />
+                            </span>
+                        </div>
+                        <div className={styles.resourceBar}>
+                            <div
+                                className={styles.resourceFill}
+                                style={{ width: `${Math.min(100, ((player.resources.doblones || 0) / limits.maxDoblones) * 100)}%`, backgroundColor: '#DAA520' }}
+                            />
+                        </div>
+                        <span className={styles.resourceRate}>+{rates.doblonesPerHour}/h</span>
+                    </div>
+
+                    <div className={styles.resourceItem} title="Fragmentos de Éter (Premium)">
+                        <div className={styles.resourceHeader}>
+                            <img src="/assets/hud/ether.webp" className={styles.resourceIcon} alt="Ether" />
+                            <span className={styles.resourceValue}>
+                                {formatNumber(player.resources.etherFragments || 0)}
+                            </span>
+                        </div>
+                        <div className={styles.resourceBar}>
+                            <div
+                                className={styles.resourceFill}
+                                style={{ width: `0%`, backgroundColor: '#9370DB' }}
+                            />
+                        </div>
+                        <span className={styles.resourceRate}>Premium</span>
                     </div>
 
                     <div className={styles.resourceDivider} />
@@ -300,8 +338,18 @@ export function GameDashboard() {
                 onMessagesClick={() => setShowMessagesPanel(true)}
                 onRankingClick={() => setShowRankingPanel(true)}
                 onProfileClick={() => handleOpenProfile()}
+                onMarketClick={() => setShowMarketPanel(true)}
                 level={player.level || 1}
             />
+
+            {showMarketPanel && (
+                <div className={styles.marketOverlay}>
+                    <div className={styles.marketModal}>
+                        <button className={styles.marketClose} onClick={() => setShowMarketPanel(false)}>✕</button>
+                        <MarketDashboard />
+                    </div>
+                </div>
+            )}
 
             {showRankingPanel && (
                 <RankingPanel

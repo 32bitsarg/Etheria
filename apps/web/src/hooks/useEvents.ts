@@ -52,6 +52,13 @@ export function useEvents(playerId: string | undefined, onSync: () => void) {
                     }
                 }
 
+                if (data.type === 'ORDER_FILLED') {
+                    const { orderType, amount, price } = data;
+                    const currency = orderType === 'BUY' ? 'Fragmentos de Éter' : 'Doblones';
+                    addToast(`⚖️ Mercado: Tu orden de ${orderType === 'BUY' ? 'compra' : 'venta'} por ${amount} ${currency === 'Doblones' ? 'Éter' : 'Doblones'} a ${price} ha sido completada.`, 'success');
+                    onSync();
+                }
+
             } catch (error) {
                 console.error('Error parsing SSE event:', error);
             }

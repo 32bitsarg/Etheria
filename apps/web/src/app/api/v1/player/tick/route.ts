@@ -15,11 +15,11 @@ import { getAuthPlayer } from '@/lib/player-utils';
 type BuildingRecord = { type: string; level: number };
 type QueueRecord = { id: string; buildingType: string; targetLevel: number; endTime: Date };
 
-const RACE_BONUSES: Record<string, { wood: number; iron: number; gold: number; pop: number }> = {
-    elfo: { wood: 0.15, iron: 0, gold: 0, pop: 0 },
-    humano: { wood: 0, iron: 0, gold: 0.10, pop: 0 },
-    orco: { wood: 0, iron: 0.12, gold: 0, pop: 0.10 },
-    enano: { wood: 0, iron: 0.18, gold: 0.05, pop: 0 },
+const RACE_BONUSES: Record<string, { wood: number; iron: number; gold: number; doblones: number; pop: number }> = {
+    elfo: { wood: 0.15, iron: 0, gold: 0, doblones: 0, pop: 0 },
+    humano: { wood: 0.10, iron: 0.10, gold: 0.10, doblones: 0.10, pop: 0.10 },
+    orco: { wood: 0, iron: 0.12, gold: 0, doblones: 0, pop: 0.10 },
+    enano: { wood: 0, iron: 0.18, gold: 0.05, doblones: 0.05, pop: 0 },
 };
 
 const getXPForLevel = (level: number) => {
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
         const woodPerHour = getProductionPerHour(BuildingType.LUMBER_MILL, getLvl(BuildingType.LUMBER_MILL)) * (1 + raceBonus.wood);
         const ironPerHour = getProductionPerHour(BuildingType.IRON_MINE, getLvl(BuildingType.IRON_MINE)) * (1 + raceBonus.iron);
         const goldPerHour = getProductionPerHour(BuildingType.GOLD_MINE, getLvl(BuildingType.GOLD_MINE)) * (1 + raceBonus.gold);
+        const doblonesPerHour = getProductionPerHour(BuildingType.TOWN_HALL, getLvl(BuildingType.TOWN_HALL)) * (1 + raceBonus.doblones);
 
         const warehouseLevel = getLvl(BuildingType.WAREHOUSE);
         const maxStorage = Math.floor(5000 * Math.pow(1.3, warehouseLevel));
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
         const newWood = Math.min(maxStorage, player.wood + woodPerHour * elapsedHours);
         const newIron = Math.min(maxStorage, player.iron + ironPerHour * elapsedHours);
         const newGold = Math.min(maxStorage, player.gold + goldPerHour * elapsedHours);
+        const newDoblones = Math.min(maxStorage, ((player as any).doblones || 0) + doblonesPerHour * elapsedHours);
 
         // --- Completed Tasks ---
         const completedConstructions = player.city.constructionQueue.filter(q => q.endTime <= now);
@@ -112,7 +114,7 @@ export async function POST(request: NextRequest) {
             await (tx.player as any).update({
                 where: { id: player.id },
                 data: {
-                    wood: newWood, iron: newIron, gold: newGold,
+                    wood: newWood, iron: newIron, gold: newGold, doblones: newDoblones,
                     experience: currentXP, level: currentLevel,
                     militaryPower: power, lastResourceUpdate: now
                 }

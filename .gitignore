@@ -20,6 +20,8 @@ node_modules
 *.pem
 .agent/
 docs/ROADMAP.md
+docs/BANK_LEDGER.txt
+docs/ECONOMY_DOCS.md
 
 # debug
 npm-debug.log*

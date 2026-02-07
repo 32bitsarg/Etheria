@@ -24,6 +24,8 @@ model Player {
   wood               Float           @default(500)
   iron               Float           @default(300)
   gold               Float           @default(200)
+  doblones           Float           @default(100)
+  etherFragments     Float           @default(0)
   populationUsed     Int             @default(0)
   populationMax      Int             @default(200)
   lastResourceUpdate DateTime        @default(now())
@@ -39,6 +41,8 @@ model Player {
   defenderReports    CombatReport[]  @relation("DefenderReports")
   receivedMessages   Message[]       @relation("ReceivedMessages")
   sentMessages       Message[]       @relation("SentMessages")
+  exchangeOrders     ExchangeOrder[]
+  tradeListings      TradeListing[]
   user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([militaryPower])
@@ -175,4 +179,51 @@ model Message {
   deletedByRecipient Boolean  @default(false)
   recipient          Player   @relation("ReceivedMessages", fields: [recipientId], references: [id])
   sender             Player   @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model ExchangeOrder {
+  id        String   @id @default(cuid())
+  playerId  String
+  type      String   // "BUY" | "SELL"
+  amount    Float
+  price     Float    // En Doblones por Fragmento
+  status    String   @default("OPEN") // "OPEN" | "FILLED" | "CANCELLED"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  player    Player   @relation(fields: [playerId], references: [id])
+
+  @@index([price])
+  @@index([status])
+}
+
+model TradeListing {
+  id               String   @id @default(cuid())
+  sellerId         String
+  offeredType      String   // WOOD, IRON, GOLD, DOBLONES, ETHER
+  offeredAmount    Float
+  requestedType    String   // WOOD, IRON, GOLD, DOBLONES, ETHER
+  requestedAmount  Float
+  status           String   @default("OPEN") // "OPEN", "FILLED", "CANCELLED"
+  createdAt        DateTime @default(now())
+  seller           Player   @relation(fields: [sellerId], references: [id])
+
+  @@index([status])
+  @@index([offeredType])
+  @@index([requestedType])
+}
+
+model MarketHistory {
+  id             String   @id @default(cuid())
+  price          Float
+  volume         Float
+  type           String   @default("BUY") // "BUY" | "SELL"
+  timestamp      DateTime @default(now())
+
+  @@index([timestamp])
+}
+model MarketState {
+  id             String   @id @default("global")
+  etherReserve   Float    @default(100000) // Reserva virtual de Éter
+  doblonesReserve Float   @default(50000000) // Reserva virtual de Doblones (Precio inicial ~500)
+  lastUpdate     DateTime @default(now())
 }

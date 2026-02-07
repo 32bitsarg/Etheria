@@ -39,9 +39,14 @@ export async function GET(request: NextRequest) {
         if (data.targetUserId === userId) sendEvent({ type: 'NEW_MESSAGE', ...data });
     };
 
+    const onOrderFilled = (data: any) => {
+        if (data.userId === userId) sendEvent({ type: EVENTS.ORDER_FILLED, ...data });
+    };
+
     gameEvents.on(EVENTS.ATTACK_INCOMING, onAttackIncoming);
     gameEvents.on(EVENTS.BATTLE_REPORT, onBattleReport);
     gameEvents.on('NEW_MESSAGE', onNewMessage);
+    gameEvents.on(EVENTS.ORDER_FILLED, onOrderFilled);
 
     const heartbeat = setInterval(() => sendEvent({ type: 'HEARTBEAT', timestamp: Date.now() }), 30000);
 
@@ -50,6 +55,7 @@ export async function GET(request: NextRequest) {
         gameEvents.off(EVENTS.ATTACK_INCOMING, onAttackIncoming);
         gameEvents.off(EVENTS.BATTLE_REPORT, onBattleReport);
         gameEvents.off('NEW_MESSAGE', onNewMessage);
+        gameEvents.off(EVENTS.ORDER_FILLED, onOrderFilled);
         writer.close();
     });
 

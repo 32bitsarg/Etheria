@@ -149,12 +149,14 @@ export function calculateProductionRates(state: PlayerState): ProductionRates {
     const lumberMillLevel = getBuildingLevel(state.city.buildings, BuildingType.LUMBER_MILL);
     const ironMineLevel = getBuildingLevel(state.city.buildings, BuildingType.IRON_MINE);
     const goldMineLevel = getBuildingLevel(state.city.buildings, BuildingType.GOLD_MINE);
+    const townHallLevel = getBuildingLevel(state.city.buildings, BuildingType.TOWN_HALL);
 
     // Producción base por edificios
     const baseProduction = {
         wood: getProductionPerHour(BuildingType.LUMBER_MILL, lumberMillLevel),
         iron: getProductionPerHour(BuildingType.IRON_MINE, ironMineLevel),
         gold: getProductionPerHour(BuildingType.GOLD_MINE, goldMineLevel),
+        doblones: getProductionPerHour(BuildingType.TOWN_HALL, townHallLevel),
     };
 
     // Aplicar bonuses raciales
@@ -164,6 +166,7 @@ export function calculateProductionRates(state: PlayerState): ProductionRates {
         woodPerHour: racialProduction.wood,
         ironPerHour: racialProduction.iron,
         goldPerHour: racialProduction.gold,
+        doblonesPerHour: racialProduction.doblones,
     };
 }
 

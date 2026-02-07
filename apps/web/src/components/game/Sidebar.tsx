@@ -17,6 +17,7 @@ interface SidebarProps {
     onMessagesClick: () => void;
     onRankingClick: () => void;
     onProfileClick: () => void;
+    onMarketClick: () => void;
     level: number;
 }
 
@@ -27,7 +28,7 @@ const RACE_IMAGES: Record<string, string> = {
     enano: '/assets/races/Dwarf.webp',
 };
 
-export const Sidebar = memo(function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, level }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ onLogout, musicVolume, sfxVolume, onMusicVolumeChange, onSfxVolumeChange, city, race, currentView, onViewChange, onReportsClick, onMessagesClick, onRankingClick, onProfileClick, onMarketClick, level }: SidebarProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     // Fallback if race key doesn't match exactly or image is missing
@@ -36,11 +37,12 @@ export const Sidebar = memo(function Sidebar({ onLogout, musicVolume, sfxVolume,
     const menuItems = useMemo(() => [
         { id: 'city', label: 'Ciudad', icon: '/assets/hud/cityicon.webp', view: 'city' as const },
         { id: 'world', label: 'Mapa', icon: '/assets/hud/worldicon.webp', view: 'world' as const },
+        { id: 'market', label: 'Mercado', icon: '/assets/hud/market.webp', action: onMarketClick },
         { id: 'messages', label: 'Mensajes', icon: '/assets/hud/messageicon.webp', action: onMessagesClick },
         { id: 'reports', label: 'Informes', icon: '/assets/hud/informesicon.webp', action: onReportsClick },
         { id: 'ranking', label: 'Clasificación', icon: '/assets/hud/rankicon.webp', action: onRankingClick },
         { id: 'profile', label: 'Perfil', icon: '/assets/hud/profileicon.webp', action: onProfileClick },
-    ], [onMessagesClick, onReportsClick, onRankingClick, onProfileClick]);
+    ], [onMessagesClick, onReportsClick, onRankingClick, onProfileClick, onMarketClick]);
 
     return (
         <div className={styles.sidebar}>

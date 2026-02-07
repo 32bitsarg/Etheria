@@ -14,6 +14,8 @@ export enum ResourceType {
     WOOD = 'wood',
     IRON = 'iron',
     GOLD = 'gold',
+    DOBLONES = 'doblones',
+    ETHER_FRAGMENTS = 'etherFragments',
     POPULATION = 'population', // Especial: no se almacena, es un límite
 }
 
@@ -48,7 +50,21 @@ export const RESOURCE_INFO: Record<ResourceType, ResourceInfo> = {
         name: 'Oro',
         icon: '🪙',
         color: '#FFD700',
-        description: 'Moneda para comercio y unidades especiales',
+        description: 'Metal precioso para edificios avanzados y tropas élite',
+    },
+    [ResourceType.DOBLONES]: {
+        id: ResourceType.DOBLONES,
+        name: 'Doblones',
+        icon: '💰',
+        color: '#DAA520',
+        description: 'Moneda común usada para el comercio en el mercado',
+    },
+    [ResourceType.ETHER_FRAGMENTS]: {
+        id: ResourceType.ETHER_FRAGMENTS,
+        name: 'Fragmentos de Éter',
+        icon: '✨',
+        color: '#9370DB',
+        description: 'Moneda premium impulsada por la economía del reino',
     },
     [ResourceType.POPULATION]: {
         id: ResourceType.POPULATION,
@@ -71,8 +87,12 @@ export interface ResourceState {
     wood: number;
     /** Cantidad actual de hierro */
     iron: number;
-    /** Cantidad actual de oro */
+    /** Cantidad actual de oro (recurso) */
     gold: number;
+    /** Cantidad de Doblones (moneda mercado) */
+    doblones: number;
+    /** Cantidad de Fragmentos de Éter (Premium) */
+    etherFragments: number;
     /** Población actual usada */
     populationUsed: number;
     /** Población máxima (determinada por granja) */
@@ -86,6 +106,7 @@ export interface ProductionRates {
     woodPerHour: number;
     ironPerHour: number;
     goldPerHour: number;
+    doblonesPerHour: number;
 }
 
 /**
@@ -95,6 +116,7 @@ export interface StorageLimits {
     maxWood: number;
     maxIron: number;
     maxGold: number;
+    maxDoblones: number;
 }
 
 /**
@@ -120,6 +142,8 @@ export function createInitialResources(): ResourceState {
         wood: 1500,   // Suficiente para: Granja + Aserradero + Minas
         iron: 1000,   // Suficiente para empezar producción
         gold: 500,    // Reserva inicial
+        doblones: 100, // Capital inicial para mercado
+        etherFragments: 0,
         populationUsed: 0,
         populationMax: 100, // Base sin granja
     };
@@ -134,12 +158,13 @@ export function createInitialResources(): ResourceState {
 export function calculateProduction(
     rates: ProductionRates,
     elapsedSeconds: number
-): Omit<ResourceState, 'populationUsed' | 'populationMax'> {
+): Omit<ResourceState, 'populationUsed' | 'populationMax' | 'etherFragments'> {
     const hours = elapsedSeconds / 3600;
     return {
         wood: Math.floor(rates.woodPerHour * hours),
         iron: Math.floor(rates.ironPerHour * hours),
         gold: Math.floor(rates.goldPerHour * hours),
+        doblones: Math.floor(rates.doblonesPerHour * hours),
     };
 }
 
@@ -148,7 +173,7 @@ export function calculateProduction(
  */
 export function applyProduction(
     current: ResourceState,
-    production: { wood: number; iron: number; gold: number },
+    production: { wood: number; iron: number; gold: number; doblones: number },
     limits: StorageLimits
 ): ResourceState {
     return {
@@ -156,6 +181,7 @@ export function applyProduction(
         wood: Math.min(current.wood + production.wood, limits.maxWood),
         iron: Math.min(current.iron + production.iron, limits.maxIron),
         gold: Math.min(current.gold + production.gold, limits.maxGold),
+        doblones: Math.min(current.doblones + production.doblones, limits.maxDoblones),
     };
 }
 
@@ -202,6 +228,7 @@ export function addResources(
         wood: Math.min(resources.wood + (amount.wood || 0), limits.maxWood),
         iron: Math.min(resources.iron + (amount.iron || 0), limits.maxIron),
         gold: Math.min(resources.gold + (amount.gold || 0), limits.maxGold),
+        doblones: Math.min(resources.doblones + (amount.doblones || 0), limits.maxDoblones),
     };
 }
 
@@ -298,5 +325,6 @@ export function createStorageLimits(warehouseLevel: number): StorageLimits {
         maxWood: capacity,
         maxIron: capacity,
         maxGold: capacity,
+        maxDoblones: capacity,
     };
 }

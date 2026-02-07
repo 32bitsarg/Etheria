@@ -66,6 +66,7 @@ export interface ProductionBonus {
     wood: number;   // % bonus madera
     iron: number;   // % bonus hierro
     gold: number;   // % bonus oro
+    doblones: number; // % bonus doblones
     population: number; // % bonus población máxima
 }
 
@@ -106,6 +107,7 @@ export const ELFO: ConfigRaza = {
         wood: 15,   // Elfos: +15% madera (conexión con bosques)
         iron: 0,
         gold: 5,
+        doblones: 0,
         population: 0,
     },
 };
@@ -138,6 +140,7 @@ export const HUMANO: ConfigRaza = {
         wood: 10,   // Humanos: +10% en todo (versátiles)
         iron: 10,
         gold: 10,
+        doblones: 10,
         population: 10,
     },
 };
@@ -180,6 +183,7 @@ export const ORCO: ConfigRaza = {
         wood: 0,
         iron: 20,   // Orcos: +20% hierro (guerreros)
         gold: 0,
+        doblones: 0,
         population: 15,  // Reproducción rápida
     },
 };
@@ -213,6 +217,7 @@ export const ENANO: ConfigRaza = {
         wood: -10,  // Enanos: -10% madera (prefieren piedra)
         iron: 15,   // +15% hierro
         gold: 25,   // +25% oro (maestros mineros)
+        doblones: 5,
         population: 0,
     },
 };
@@ -276,13 +281,14 @@ export function applyRacialProductionBonus(baseRate: number, bonusPercent: numbe
  * Obtiene las tasas de producción con bonuses raciales aplicados
  */
 export function getProductionWithRacialBonus(
-    baseProduction: { wood: number; iron: number; gold: number },
+    baseProduction: { wood: number; iron: number; gold: number; doblones: number },
     raza: ConfigRaza
-): { wood: number; iron: number; gold: number } {
+): { wood: number; iron: number; gold: number; doblones: number } {
     return {
         wood: applyRacialProductionBonus(baseProduction.wood, raza.productionBonus.wood),
         iron: applyRacialProductionBonus(baseProduction.iron, raza.productionBonus.iron),
         gold: applyRacialProductionBonus(baseProduction.gold, raza.productionBonus.gold),
+        doblones: applyRacialProductionBonus(baseProduction.doblones, raza.productionBonus.doblones),
     };
 }
 

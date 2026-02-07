@@ -218,9 +218,10 @@ export function formatBuildTime(seconds: number): string {
  * Producción base por hora (nivel 1)
  */
 const BASE_PRODUCTION: Record<string, number> = {
-    [BuildingType.IRON_MINE]: 40,    // Aumentado de 30
-    [BuildingType.GOLD_MINE]: 25,    // Aumentado de 20
-    [BuildingType.LUMBER_MILL]: 50,  // Aumentado de 35
+    [BuildingType.IRON_MINE]: 40,
+    [BuildingType.GOLD_MINE]: 25,
+    [BuildingType.LUMBER_MILL]: 50,
+    [BuildingType.TOWN_HALL]: 20, // Produce Doblones
 };
 
 /**

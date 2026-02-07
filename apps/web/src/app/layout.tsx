@@ -22,8 +22,6 @@ export const metadata: Metadata = {
   title: `${APP_CONFIG.name} - ${APP_CONFIG.description}`,
   description: APP_CONFIG.description,
   manifest: '/manifest.json',
-  themeColor: '#d4af37',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   icons: {
     icon: [
       { url: APP_CONFIG.icon, type: 'image/webp' },
@@ -37,6 +35,14 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: APP_CONFIG.name,
   },
+};
+
+export const viewport = {
+  themeColor: '#d4af37',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

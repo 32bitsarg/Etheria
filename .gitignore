@@ -22,6 +22,7 @@ node_modules
 docs/ROADMAP.md
 docs/BANK_LEDGER.txt
 docs/ECONOMY_DOCS.md
+docs/NPC_RAIDS.md
 
 # debug
 npm-debug.log*

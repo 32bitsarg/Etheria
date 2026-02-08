@@ -34,46 +34,64 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
     {
         version: '0.1.2',
-        date: '2026-02-07',
-        title: 'Integridad Comercial y Estética Imperial',
+        date: '2026-02-08',
+        title: 'Crónicas de Guerra e Incursiones Ancestrales',
         type: 'minor',
         changes: [
             {
                 category: 'feature',
-                description: 'Garantía Real de Tratos: Los fondos de las órdenes ahora se protegen instantáneamente para asegurar que cada intercambio se cumpla con honor.',
+                description: 'Incursiones NPC: Los Bárbaros y Guardianes de las Ruinas ahora custodian tesoros. Derrótalos para obtener Doblones y Fragmentos de Éter.',
             },
             {
                 category: 'feature',
-                description: 'Decreto de Cancelación: Nueva autoridad para retirar ofertas del mercado y recuperar tus riquezas de forma inmediata.',
+                description: 'Informes de Combate en Tiempo Real: Recibe resultados de batallas al instante con notificaciones visuales y badges dinámicos en el menú.',
             },
             {
                 category: 'ui',
-                description: 'Pergamino de Confirmación Real: Sustitución de avisos genéricos por un diálogo imperial con estética de cristal para acciones críticas.',
+                description: 'Rediseño del Panel de Informes: Nueva interfaz con scroll infinito y barra de desplazamiento imperial para gestionar todas tus hazañas militares.',
+            },
+            {
+                category: 'ui',
+                description: 'Iconos de Tesorería Reales: Los recursos saqueados ahora se muestran con sus iconos originales en los informes de batalla.',
             },
             {
                 category: 'balance',
-                description: 'Estabilización del Mercado: El Banco Imperial ahora interviene para asegurar precios justos y evitar oscilaciones extrañas causadas por pequeños mercaderes.',
+                description: 'Botín de Campamentos: Ajustada la probabilidad de obtención de recursos raros en campamentos de Tier 1, 2 y 3.',
+            },
+            {
+                category: 'feature',
+                description: 'Garantía Real de Tratos: Los fondos de las órdenes en el mercado ahora se protegen instantáneamente para asegurar el comercio.',
             },
             {
                 category: 'ui',
-                description: 'Resaltado de Pertenencias: Tus ofertas en el mercado ahora brillan con un borde dorado, facilitando su gestión en el libro de comercio.',
+                description: 'HUD de Tesorería Evolucionado: Visualización mejorada de Doblones y Éter adaptada a dispositivos móviles.',
             },
+            {
+                category: 'feature',
+                description: 'Gestión Avanzada de Informes: Ahora puedes filtrar por tipo de batalla (Ataque, Defensa, NPC), marcar reportes individualmente como leídos y vaciar tu bitácora.',
+            },
+            {
+                category: 'ui',
+                description: 'Feedback de Combate: Indicadores de eficiencia del ejército y narrativa dinámica según el resultado (Victoria Pírrica, Aplastante, etc.).',
+            },
+            {
+                category: 'ui',
+                description: 'World Map Evolucionado: Tiers de campamentos en números romanos y temporizadores de reaparición (respawn) en tiempo real con diseño compacto.',
+            },
+            {
+                category: 'feature',
+                description: 'Paisaje Sonoro: Implementación de sonidos de notificación (notification.mp3) sincronizados con los eventos del juego.',
+            },
+            {
+                category: 'ui',
+                description: 'Paginación de Bitácora: Soporte para "Cargar más" informes, permitiendo navegar por historiales militares extensos eficientemente.',
+            },
+
             {
                 category: 'bugfix',
-                description: 'Corrección de Identidad: Se ha resuelto un problema que impedía a algunos mercaderes reconocer sus propios tratos publicados.',
+                description: 'Sincronización de Mensajería: Corregido el retraso en la recepción de notificaciones de nuevos informes y mensajes.',
             },
-            {
-                category: 'ui',
-                description: 'Mercado Móvil Refinado: Adaptación total del tablón de anuncios y el tablero de cambio para un uso táctil impecable.',
-            },
-            {
-                category: 'ui',
-                description: 'HUD de Tesorería Evolucionado: La barra superior ahora muestra Doblones y Éter con nuevos iconos imperiales, adaptándose a cualquier pantalla.',
-            },
-            {
-                category: 'ui',
-                description: 'Acabados Nobles: Implementación de texturas de cristal y cierres dorados en todos los paneles para una experiencia de juego superior.',
-            },
+
         ],
     },
     {

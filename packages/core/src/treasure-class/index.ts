@@ -172,6 +172,47 @@ export const TREASURE_CLASSES_DEFAULT: TreasureClass[] = [
             { tcRef: 'tc_joyeria', peso: 25 },
         ],
     },
+
+    // === TCs DE CAMPAMENTOS NPC (RECURSOS) ===
+    {
+        id: 'tc_campamento_barbaro_t1',
+        nombre: 'Campamento Bárbaro Tier 1',
+        nivel: 1,
+        picks: 3, // 3 rolls de loot
+        noDrop: 10, // 10% chance de no dropear en cada pick
+        entradas: [
+            { itemId: 'recurso_madera', peso: 40 },   // Alta prob de madera
+            { itemId: 'recurso_hierro', peso: 30 },   // Media prob de hierro
+            { itemId: 'recurso_doblones', peso: 20 }, // Baja prob de doblones
+        ],
+    },
+    {
+        id: 'tc_campamento_barbaro_t2',
+        nombre: 'Campamento Bárbaro Tier 2',
+        nivel: 5,
+        picks: 5, // 5 rolls de loot
+        noDrop: 5,
+        entradas: [
+            { itemId: 'recurso_madera', peso: 35 },
+            { itemId: 'recurso_hierro', peso: 35 },
+            { itemId: 'recurso_oro', peso: 15 },
+            { itemId: 'recurso_doblones', peso: 15 },
+        ],
+    },
+    {
+        id: 'tc_ruina_t3',
+        nombre: 'Ruinas Antiguas Tier 3',
+        nivel: 15,
+        picks: 4,
+        noDrop: 5,
+        modificadorRaro: 1.5,
+        entradas: [
+            { itemId: 'recurso_hierro', peso: 25 },
+            { itemId: 'recurso_oro', peso: 30 },
+            { itemId: 'recurso_doblones', peso: 25 },
+            { itemId: 'recurso_ether', peso: 20 },
+        ],
+    },
 ];
 
 // Aliases

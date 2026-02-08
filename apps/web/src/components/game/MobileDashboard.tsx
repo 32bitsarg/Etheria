@@ -22,6 +22,7 @@ import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { useVolume } from '@/hooks/useVolume';
 import { MobileSettings } from './MobileSettings';
 import { MobileBottomNav } from './MobileBottomNav';
+import { useNotifications } from '@/hooks/useNotifications';
 import styles from './MobileDashboard.module.css';
 
 export function MobileDashboard() {
@@ -50,8 +51,18 @@ export function MobileDashboard() {
     const [showSettings, setShowSettings] = useState(false);
     const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null);
     const { musicVolume, sfxVolume, setMusicVolume, setSfxVolume } = useVolume();
+    const { unreadReports, unreadMessages, refreshNotifications } = useNotifications(player?.id);
 
-    useEvents(player?.id, syncWithServer);
+    const playNotificationSound = useCallback(() => {
+        const audio = new Audio('/assets/sounds/sfx/notification.mp3');
+        audio.volume = sfxVolume / 100;
+        audio.play().catch(e => console.warn("Audio play blocked", e));
+    }, [sfxVolume]);
+
+    useEvents(player?.id, syncWithServer, () => {
+        refreshNotifications();
+        playNotificationSound();
+    });
 
     const handleBuildingClick = useCallback((type: BuildingType) => {
         setSelectedBuilding(type);
@@ -215,6 +226,8 @@ export function MobileDashboard() {
                 currentView={view}
                 onViewChange={setView}
                 onPanelChange={handlePanelChange}
+                unreadReports={unreadReports}
+                unreadMessages={unreadMessages}
             />
 
             {/* Background Music */}

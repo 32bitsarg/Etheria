@@ -69,3 +69,22 @@
     padding: 1px 4px;
     border-radius: 3px;
 }
+
+/* Estilos para Raids NPC */
+.raidOutgoing {
+    border-left: 3px solid #cd7f32;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(160, 82, 45, 0.2));
+}
+
+.raidOutgoing .type {
+    color: #daa520;
+}
+
+.raidReturning {
+    border-left: 3px solid #90ee90;
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.2), rgba(50, 205, 50, 0.2));
+}
+
+.raidReturning .type {
+    color: #90ee90;
+}

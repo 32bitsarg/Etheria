@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET() {
     const headersList = await headers();
     const userId = headersList.get('x-user-id');
 
@@ -13,10 +13,6 @@ export async function GET(request: Request) {
     }
 
     try {
-        const { searchParams } = new URL(request.url || '', 'http://localhost');
-        const limit = parseInt(searchParams.get('limit') || '20');
-        const skip = parseInt(searchParams.get('skip') || '0');
-
         const player = await prisma.player.findUnique({
             where: { userId },
             select: { id: true }
@@ -26,30 +22,26 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Player not found' }, { status: 404 });
         }
 
-        const reports = await prisma.combatReport.findMany({
+        const unreadReports = await prisma.combatReport.count({
             where: {
                 OR: [
                     { attackerId: player.id },
                     { defenderId: player.id }
-                ]
-            },
-            orderBy: {
-                timestamp: 'desc'
-            },
-            skip,
-            take: limit + 1 // Pedimos uno más para saber si hay más páginas
+                ],
+                read: false
+            }
         });
 
-        const hasMore = reports.length > limit;
-        const results = hasMore ? reports.slice(0, limit) : reports;
+        // También podemos contar mensajes no leídos aquí si los tenemos implementados
+        // Por ahora solo informes como pidió el usuario
 
         return NextResponse.json({
             success: true,
-            reports: results,
-            hasMore
+            unreadReports,
+            unreadMessages: 0 // Placeholder
         });
     } catch (error) {
-        console.error('Error fetching reports:', error);
+        console.error('Error fetching unread counts:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

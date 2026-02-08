@@ -12,6 +12,15 @@ interface Movement {
     units: any;
 }
 
+interface RaidMovement {
+    id: string;
+    type: 'RAID' | 'RAID_RETURN';
+    endTime: string | number | Date;
+    campName: string;
+    units: any;
+    status: string;
+}
+
 interface CombatMovementsProps {
     originMovements: Movement[];
     targetMovements: Movement[];
@@ -20,6 +29,27 @@ interface CombatMovementsProps {
 
 export function CombatMovements({ originMovements, targetMovements, onArrival }: CombatMovementsProps) {
     const [now, setNow] = useState(Date.now());
+    const [raidMovements, setRaidMovements] = useState<RaidMovement[]>([]);
+
+    // Fetch raid movements
+    useEffect(() => {
+        const fetchRaids = async () => {
+            try {
+                const res = await fetch('/api/v1/raids/movements');
+                const data = await res.json();
+                if (data.success) {
+                    setRaidMovements(data.raids);
+                }
+            } catch (error) {
+                console.error('Error fetching raid movements:', error);
+            }
+        };
+
+        fetchRaids();
+        // Refetch cada 5 segundos
+        const fetchInterval = setInterval(fetchRaids, 5000);
+        return () => clearInterval(fetchInterval);
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -29,18 +59,23 @@ export function CombatMovements({ originMovements, targetMovements, onArrival }:
             const allMovementsList = [...originMovements, ...targetMovements];
             const arrived = allMovementsList.find(m => {
                 const end = new Date(m.endTime).getTime();
-                // Check if it finished in this second
                 return end <= currentTime && end > now;
             });
 
-            if (arrived && onArrival) {
+            // Check if any raid just arrived
+            const raidArrived = raidMovements.find(m => {
+                const end = new Date(m.endTime).getTime();
+                return end <= currentTime && end > now;
+            });
+
+            if ((arrived || raidArrived) && onArrival) {
                 onArrival();
             }
 
             setNow(currentTime);
         }, 1000);
         return () => clearInterval(interval);
-    }, [originMovements, targetMovements, onArrival, now]);
+    }, [originMovements, targetMovements, raidMovements, onArrival, now]);
 
     const formatTime = (endTime: any) => {
         const end = new Date(endTime).getTime();
@@ -50,19 +85,42 @@ export function CombatMovements({ originMovements, targetMovements, onArrival }:
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 
-    const allMovements = [
-        ...originMovements.map(m => ({ ...m, category: 'outgoing' })),
-        ...targetMovements.map(m => ({ ...m, category: 'incoming' }))
+    // Combinar movimientos de combate PvP
+    const pvpMovements = [
+        ...originMovements.map(m => ({ ...m, category: 'outgoing' as const })),
+        ...targetMovements.map(m => ({ ...m, category: 'incoming' as const }))
     ].filter(m => {
-        // Ocultar si ya terminó (optimismo visual)
         if (new Date(m.endTime).getTime() <= now) return false;
-
-        // Only show RETURN to the destination city (targetCityId)
         if (m.type === 'RETURN') {
             return m.category === 'incoming';
         }
         return true;
-    }).sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime());
+    });
+
+    // Combinar con raids NPC (filtrar pasadas)
+    const activeRaids = raidMovements.filter(m =>
+        new Date(m.endTime).getTime() > now
+    );
+
+    // Unificar todos los movimientos
+    const allMovements = [
+        ...pvpMovements.map(m => ({
+            ...m,
+            isRaid: false,
+            campName: null as string | null,
+        })),
+        ...activeRaids.map(m => ({
+            id: m.id,
+            type: m.type,
+            endTime: m.endTime,
+            category: m.type === 'RAID_RETURN' ? 'incoming' as const : 'outgoing' as const,
+            units: m.units,
+            originCity: undefined,
+            targetCity: undefined,
+            isRaid: true,
+            campName: m.campName,
+        }))
+    ].sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime());
 
     if (allMovements.length === 0) return null;
 
@@ -70,28 +128,56 @@ export function CombatMovements({ originMovements, targetMovements, onArrival }:
         <div className={styles.container}>
             {allMovements.map(mov => {
                 const isIncoming = mov.category === 'incoming';
-                const isReturn = mov.type === 'RETURN';
+                const isReturn = mov.type === 'RETURN' || mov.type === 'RAID_RETURN';
+                const isRaid = mov.isRaid;
 
                 let label = '';
-                if (isReturn) label = 'Regresando de';
-                else if (isIncoming) label = 'Ataque de';
-                else label = 'Atacando a';
+                let icon = '';
+                if (isRaid) {
+                    if (isReturn) {
+                        label = 'Regresando de';
+                        icon = '🏕️';
+                    } else {
+                        label = 'Asaltando';
+                        icon = '⚔️';
+                    }
+                } else {
+                    if (isReturn) {
+                        label = 'Regresando de';
+                        icon = '🔄';
+                    } else if (isIncoming) {
+                        label = 'Ataque de';
+                        icon = '⚠️';
+                    } else {
+                        label = 'Atacando a';
+                        icon = '⚔️';
+                    }
+                }
 
-                const cityName = isIncoming ? mov.originCity?.name : mov.targetCity?.name;
+                const targetName = isRaid
+                    ? mov.campName
+                    : (isIncoming ? mov.originCity?.name : mov.targetCity?.name);
+
+                // Estilo especial para raids
+                const raidClass = isRaid
+                    ? (isReturn ? styles.raidReturning : styles.raidOutgoing)
+                    : '';
 
                 return (
                     <div
                         key={mov.id}
-                        className={`${styles.movementItem} ${isReturn ? styles.returning : isIncoming ? styles.incoming : styles.outgoing}`}
+                        className={`${styles.movementItem} ${isReturn ? styles.returning : isIncoming ? styles.incoming : styles.outgoing} ${raidClass}`}
                     >
                         <div className={styles.movementHeader}>
                             <span className={styles.type}>
-                                {isReturn ? 'RETORNO' : isIncoming ? 'ENTRANTE' : 'ATAQUE'}
+                                {icon} {isRaid
+                                    ? (isReturn ? 'RETORNO RAID' : 'RAID NPC')
+                                    : (isReturn ? 'RETORNO' : isIncoming ? 'ENTRANTE' : 'ATAQUE')}
                             </span>
                             <span className={styles.timer}>{formatTime(mov.endTime)}</span>
                         </div>
                         <div className={styles.details}>
-                            {label} <span className={styles.target}>{cityName || 'Desconocido'}</span>
+                            {label} <span className={styles.target}>{targetName || 'Desconocido'}</span>
                         </div>
                     </div>
                 );

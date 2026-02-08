@@ -11,6 +11,7 @@ import {
 } from '@lootsystem/game-engine';
 import { gameEvents, EVENTS } from '@/lib/gameEvents';
 import { getAuthPlayer } from '@/lib/player-utils';
+import { GeneradorLoot, DEFAULT_TREASURE_CLASSES, DEFAULT_ITEMS } from '@lootsystem/core';
 
 type BuildingRecord = { type: string; level: number };
 type QueueRecord = { id: string; buildingType: string; targetLevel: number; endTime: Date };
@@ -69,6 +70,15 @@ export async function POST(request: NextRequest) {
 
         const returningMovements = await prisma.combatMovement.findMany({
             where: { originCityId: player.city.id, type: 'RETURN', endTime: { lt: now } }
+        });
+
+        // --- Raids NPC ---
+        const arrivingRaids = await (prisma as any).raidMovement.findMany({
+            where: { playerId: player.id, status: 'TRAVELING', endTime: { lt: now } }
+        });
+
+        const returningRaids = await (prisma as any).raidMovement.findMany({
+            where: { playerId: player.id, status: 'RETURNING', endTime: { lt: now } }
         });
 
         // --- Progression & Power Recalculation ---
@@ -226,6 +236,195 @@ export async function POST(request: NextRequest) {
                 }
                 await tx.combatMovement.delete({ where: { id: ret.id } });
             }
+
+            // --- Raid NPC Resolution ---
+            const txAny = tx as any;
+            for (const raid of arrivingRaids) {
+                // Obtener campamento objetivo
+                const camp = await txAny.nPCCamp.findUnique({ where: { id: raid.targetCampId } });
+                if (!camp || camp.isDestroyed) {
+                    // Campamento ya destruido, devolver tropas
+                    const travelTime = raid.endTime.getTime() - raid.startTime.getTime();
+                    await txAny.raidMovement.update({
+                        where: { id: raid.id },
+                        data: { status: 'RETURNING', endTime: new Date(Date.now() + travelTime) }
+                    });
+                    continue;
+                }
+
+                // Calcular poder del atacante
+                const attackerUnits = Array.isArray(raid.units) ? raid.units : [];
+                let attackPower = 0;
+                for (const u of attackerUnits as any[]) {
+                    const stats = UNIT_STATS[u.type as UnitType];
+                    attackPower += (stats?.stats?.attack ?? 10) * u.count;
+                }
+
+                // Calcular poder del defensor (NPC)
+                const npcUnits = camp.units || {};
+                let defensePower = 0;
+                const NPC_STATS: Record<string, { attack: number; defense: number }> = {
+                    barbarian_light: { attack: 8, defense: 5 },
+                    barbarian_archer: { attack: 12, defense: 3 },
+                    guardian: { attack: 25, defense: 20 },
+                };
+                for (const [unitType, count] of Object.entries(npcUnits)) {
+                    const npcStat = NPC_STATS[unitType as keyof typeof NPC_STATS] || { attack: 5, defense: 5 };
+                    defensePower += npcStat.defense * (count as number);
+                }
+
+                const victory = attackPower > defensePower;
+                const travelTime = raid.endTime.getTime() - raid.startTime.getTime();
+
+                if (victory) {
+                    // Victoria: generar loot y marcar campamento como destruido
+                    const generador = new GeneradorLoot(
+                        { nivelJugador: player.level },
+                        { items: DEFAULT_ITEMS, treasureClasses: DEFAULT_TREASURE_CLASSES }
+                    );
+                    const lootResult = generador.generarDesdeTC(camp.treasureClassId, {
+                        nivelMonstruo: camp.tier * 5,
+                        esJefe: camp.tier >= 3
+                    });
+
+                    // Convertir loot a recursos
+                    let lootWood = 0, lootIron = 0, lootGold = 0, lootDoblones = 0, lootEther = 0;
+                    for (const item of lootResult.items) {
+                        const cantidad = item.cantidad || 1;
+                        if (item.itemBase.id === 'recurso_madera') lootWood += cantidad * 100;
+                        else if (item.itemBase.id === 'recurso_hierro') lootIron += cantidad * 100;
+                        else if (item.itemBase.id === 'recurso_oro') lootGold += cantidad * 50;
+                        else if (item.itemBase.id === 'recurso_doblones') lootDoblones += cantidad * 10;
+                        else if (item.itemBase.id === 'recurso_ether') lootEther += cantidad;
+                    }
+
+                    // Calcular bajas del atacante (10-30% de las tropas)
+                    const lossRatio = 0.1 + Math.random() * 0.2 * (defensePower / attackPower);
+                    const survivingUnits = attackerUnits.map((u: any) => ({
+                        type: u.type,
+                        count: Math.max(1, Math.floor(u.count * (1 - lossRatio)))
+                    }));
+
+                    // Generar reporte de victoria
+                    const attackerLosses = (attackerUnits as any[]).map(u => {
+                        const surviving = survivingUnits.find((s: any) => s.type === u.type);
+                        return { type: u.type, count: u.count - (surviving?.count ?? 0) };
+                    });
+                    const city = await tx.city.findUnique({ where: { id: raid.originCityId }, select: { name: true } });
+                    const campName = getCampName(camp.type, camp.tier);
+
+                    await tx.combatReport.create({
+                        data: {
+                            attackerId: player.id,
+                            originCityName: city?.name || 'Ciudad',
+                            targetCityName: campName,
+                            won: true,
+                            lootedWood: lootWood,
+                            lootedIron: lootIron,
+                            lootedGold: lootGold,
+                            lootedDoblones: lootDoblones,
+                            lootedEther: lootEther,
+                            troopSummary: {
+                                attackerInitial: attackerUnits,
+                                attackerLosses: attackerLosses,
+                                defenderInitial: Object.entries(npcUnits).map(([type, count]) => ({ type, count })),
+                                defenderLosses: Object.entries(npcUnits).map(([type, count]) => ({ type, count }))
+                            } as any
+                        }
+                    });
+
+                    gameEvents.emit(EVENTS.BATTLE_REPORT, {
+                        attackerId: player.id,
+                        attackerUserId: player.userId,
+                        won: true
+                    });
+
+                    // Destruir campamento
+                    const respawnHours = camp.tier === 1 ? 4 : camp.tier === 2 ? 8 : 12;
+                    await txAny.nPCCamp.update({
+                        where: { id: camp.id },
+                        data: {
+                            isDestroyed: true,
+                            respawnAt: new Date(Date.now() + respawnHours * 60 * 60 * 1000),
+                            lastAttack: new Date()
+                        }
+                    });
+
+                    // Dar XP al jugador
+                    const xpEarned = camp.tier * 50;
+                    await tx.player.update({
+                        where: { id: player.id },
+                        data: {
+                            experience: { increment: xpEarned },
+                            wood: { increment: lootWood },
+                            iron: { increment: lootIron },
+                            gold: { increment: lootGold },
+                            doblones: { increment: lootDoblones }
+                        }
+                    });
+
+                    // Marcar raid como resuelta y crear retorno
+                    await txAny.raidMovement.update({
+                        where: { id: raid.id },
+                        data: {
+                            status: 'RETURNING',
+                            units: survivingUnits,
+                            endTime: new Date(Date.now() + travelTime)
+                        }
+                    });
+                } else {
+                    // Derrota: perder todas las tropas
+                    const city = await tx.city.findUnique({ where: { id: raid.originCityId }, select: { name: true } });
+                    const campName = getCampName(camp.type, camp.tier);
+
+                    await tx.combatReport.create({
+                        data: {
+                            attackerId: player.id,
+                            originCityName: city?.name || 'Ciudad',
+                            targetCityName: campName,
+                            won: false,
+                            lootedWood: 0,
+                            lootedIron: 0,
+                            lootedGold: 0,
+                            lootedDoblones: 0,
+                            lootedEther: 0,
+                            troopSummary: {
+                                attackerInitial: attackerUnits,
+                                attackerLosses: attackerUnits,
+                                defenderInitial: Object.entries(npcUnits).map(([type, count]) => ({ type, count })),
+                                defenderLosses: []
+                            } as any
+                        }
+                    });
+
+                    gameEvents.emit(EVENTS.BATTLE_REPORT, {
+                        attackerId: player.id,
+                        attackerUserId: player.userId,
+                        won: false
+                    });
+
+                    await txAny.raidMovement.delete({ where: { id: raid.id } });
+
+                    // Actualizar último ataque del campamento
+                    await txAny.nPCCamp.update({
+                        where: { id: camp.id },
+                        data: { lastAttack: new Date() }
+                    });
+                }
+            }
+
+            // --- Raid Returns ---
+            for (const raid of returningRaids) {
+                const units = Array.isArray(raid.units) ? raid.units : [];
+                for (const u of units as any[]) {
+                    await tx.unit.upsert({
+                        where: { cityId_type: { cityId: raid.originCityId, type: u.type } },
+                        create: { cityId: raid.originCityId, type: u.type, count: u.count },
+                        update: { count: { increment: u.count } }
+                    });
+                }
+                await txAny.raidMovement.delete({ where: { id: raid.id } });
+            }
         });
 
         // Return refreshed data
@@ -250,3 +449,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+function getCampName(type: string, tier: number): string {
+    const names: Record<string, Record<number, string>> = {
+        'BARBARIAN_T1': { 1: 'Aldea Nómada' },
+        'BARBARIAN_T2': { 2: 'Campamento Fortificado' },
+        'RUIN_T3': { 3: 'Ruinas Antiguas' },
+    };
+    return names[type]?.[tier] || `Campamento Tier ${tier}`;
+}
+

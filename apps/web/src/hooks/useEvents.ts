@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useToast } from '@/components/ui/ToastContext';
 
-export function useEvents(playerId: string | undefined, onSync: () => void) {
+export function useEvents(playerId: string | undefined, onSync: () => void, onNotification?: () => void) {
     const { addToast } = useToast();
 
     useEffect(() => {
@@ -36,12 +36,14 @@ export function useEvents(playerId: string | undefined, onSync: () => void) {
 
                         addToast(`⚔️ Batalla finalizada: Ha sido una ${status}.`, status === 'victoria' ? 'success' : 'info');
                         onSync();
+                        if (onNotification) onNotification();
                     }
                 }
 
                 if (data.type === 'NEW_MESSAGE') {
                     if (data.targetPlayerId === playerId) {
                         addToast(`✉️ Has recibido un nuevo mensaje de correo.`, 'info');
+                        if (onNotification) onNotification();
                     }
                 }
 

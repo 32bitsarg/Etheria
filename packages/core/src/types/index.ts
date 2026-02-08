@@ -159,6 +159,7 @@ export enum TipoItem {
     POCION = 'pocion',
     ORO = 'oro',
     VARIOS = 'varios',
+    RECURSO = 'recurso', // Para drops de campamentos NPC
 }
 
 // Alias

@@ -21,6 +21,18 @@ interface WorldCity {
     }
 }
 
+interface NPCCamp {
+    id: string;
+    type: string;
+    tier: number;
+    x: number;
+    y: number;
+    name: string;
+    image: string;
+    isDestroyed: boolean;
+    respawnAt: string | null;
+}
+
 interface WorldMapProps {
     playerCityCoords?: { x: number; y: number };
     currentPlayerId?: string;
@@ -55,11 +67,46 @@ function seededRandom(seed: number) {
 import { UnitType } from '@lootsystem/game-engine';
 import { RadialMenu } from './RadialMenu';
 import { AttackPanel } from './AttackPanel';
+import { RaidPanel } from './RaidPanel';
+import { RaidResultModal } from './RaidResultModal';
 import { useToast } from '../ui/ToastContext';
+
+function RespawnTimer({ targetDate }: { targetDate: string }) {
+    const [timeLeft, setTimeLeft] = useState<string>('');
+
+    useEffect(() => {
+        const update = () => {
+            const now = Date.now();
+            const target = new Date(targetDate).getTime();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                setTimeLeft('Reapareciendo...');
+                return;
+            }
+
+            const mins = Math.floor(diff / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
+        };
+
+        update();
+        const interval = setInterval(update, 1000);
+        return () => clearInterval(interval);
+    }, [targetDate]);
+
+    return <span style={{ color: '#aaa', fontSize: '0.7rem' }}>{timeLeft}</span>;
+}
+
+const toRoman = (num: number) => {
+    const romanMap: Record<number, string> = { 1: 'I', 2: 'II', 3: 'III' };
+    return romanMap[num] || num.toString();
+};
 
 export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [], onViewProfile }: WorldMapProps) {
     const { addToast } = useToast();
     const [cities, setCities] = useState<WorldCity[]>([]);
+    const [npcCamps, setNpcCamps] = useState<NPCCamp[]>([]);
     const [loading, setLoading] = useState(true);
 
     const offsetRef = useRef({ x: -4500, y: -4500 });
@@ -72,6 +119,10 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
     const [selectedCity, setSelectedCity] = useState<{ city: WorldCity, pos: { x: number, y: number } } | null>(null);
     const [showAttackPanel, setShowAttackPanel] = useState<{ id: string, name: string } | null>(null);
 
+    // Estados para Raids NPC
+    const [selectedCamp, setSelectedCamp] = useState<NPCCamp | null>(null);
+    const [raidResult, setRaidResult] = useState<{ result: any, campName: string } | null>(null);
+
     const isDragging = useRef(false);
     const startPos = useRef({ x: 0, y: 0 });
 
@@ -80,10 +131,18 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
     useEffect(() => {
         const fetchMap = async () => {
             try {
-                const res = await fetch('/api/v1/world/map');
-                const data = await res.json();
-                if (data.success) {
-                    setCities(data.cities);
+                // Fetch ciudades
+                const citiesRes = await fetch('/api/v1/world/map');
+                const citiesData = await citiesRes.json();
+                if (citiesData.success) {
+                    setCities(citiesData.cities);
+                }
+
+                // Fetch campamentos NPC (incluir destruidos para mostrar ruinas)
+                const campsRes = await fetch('/api/v1/map/npcs?x1=0&y1=0&x2=100&y2=100&includeDestroyed=true');
+                const campsData = await campsRes.json();
+                if (campsData.success) {
+                    setNpcCamps(campsData.camps);
                 }
             } catch (error) {
                 console.error('Error fetching world map:', error);
@@ -285,6 +344,75 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                         </div>
                     </div>
                 ))}
+
+                {/* Renderizado de Campamentos NPC */}
+                {npcCamps.map(camp => {
+                    // Convertir coordenadas NPC (0-100) al sistema de celdas de islas
+                    const col = getCell(camp.x);
+                    const row = getCell(camp.y);
+                    const cellSize = 100 / GRID_COUNT;
+                    const seed = row * GRID_COUNT + col;
+
+                    // Usar el mismo jitter que las islas para que el campamento aparezca sobre ellas
+                    const maxJitterPercent = (80 / MAP_SIZE) * 100;
+                    const jitterX = (seededRandom(seed * 1.5) - 0.5) * maxJitterPercent * 2;
+                    const jitterY = (seededRandom(seed * 2.5) - 0.5) * maxJitterPercent * 2;
+
+                    // Posición base de la isla
+                    const islandPosX = ((col * cellSize) + (cellSize / 2) + jitterX) / 100 * MAP_SIZE;
+                    const islandPosY = ((row * cellSize) + (cellSize / 2) + jitterY) / 100 * MAP_SIZE;
+
+                    // Offset aleatorio dentro de la isla (±100px del centro)
+                    const campSeed = camp.id.charCodeAt(0) + camp.id.charCodeAt(camp.id.length - 1);
+                    const campOffsetX = (seededRandom(campSeed * 3.7) - 0.5) * 120;
+                    const campOffsetY = (seededRandom(campSeed * 5.3) - 0.5) * 120;
+
+                    return (
+                        <div
+                            key={`npc-${camp.id}`}
+                            className={`${styles.npcCampNode} ${camp.isDestroyed ? styles.npcCampDestroyed : ''}`}
+                            style={{
+                                left: `${islandPosX + campOffsetX}px`,
+                                top: `${islandPosY + campOffsetY}px`,
+                                opacity: camp.isDestroyed ? 0.6 : 1,
+                                cursor: camp.isDestroyed ? 'default' : 'pointer',
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                // Solo permitir click en campamentos activos
+                                if (!camp.isDestroyed) {
+                                    setSelectedCamp(camp);
+                                }
+                            }}
+                        >
+                            <div className={styles.npcCampTooltip}>
+                                <span className={styles.npcCampTier}>
+                                    {camp.isDestroyed ? '💀 Tier ' + toRoman(camp.tier) : `Tier ${toRoman(camp.tier)}`}
+                                </span>
+                                <span className={styles.npcCampName}>{camp.name}</span>
+                                {camp.isDestroyed && camp.respawnAt && (
+                                    <div className={styles.respawnInfo}>
+                                        <span className={styles.respawnLabel}>Respawn en:</span>
+                                        <RespawnTimer targetDate={camp.respawnAt} />
+                                    </div>
+                                )}
+                            </div>
+                            <img
+                                src={camp.image}
+                                className={styles.npcCampImg}
+                                alt={camp.name}
+                            />
+                            {camp.isDestroyed && camp.respawnAt && (
+                                <div className={styles.compactRespawn}>
+                                    <RespawnTimer targetDate={camp.respawnAt} />
+                                </div>
+                            )}
+                            {!camp.isDestroyed && (
+                                <div className={styles.tierBadge}>{toRoman(camp.tier)}</div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
             <div className={styles.mapControls}>
@@ -342,6 +470,32 @@ export function WorldMap({ playerCityCoords, currentPlayerId, availableUnits = [
                     onAttackStarted={(data) => {
                         addToast(`¡Ataque enviado! Llegada en ${data.travelTimeSeconds}s`, 'success');
                     }}
+                />
+            )}
+
+            {/* Panel de Raid NPC */}
+            {selectedCamp && !raidResult && (
+                <RaidPanel
+                    camp={selectedCamp}
+                    availableUnits={availableUnits}
+                    onClose={() => setSelectedCamp(null)}
+                    onRaidComplete={(result) => {
+                        // Las tropas están en camino, el combate se resuelve cuando llegan
+                        if (result.message) {
+                            addToast(result.message, 'success');
+                        }
+                        setSelectedCamp(null);
+                        // NO marcamos como destruido aquí - se resuelve en el tick del servidor
+                    }}
+                />
+            )}
+
+            {/* Modal de Resultado de Raid - solo se muestra si hay resultado real */}
+            {raidResult && raidResult.result.victory !== undefined && (
+                <RaidResultModal
+                    result={raidResult.result}
+                    campName={raidResult.campName}
+                    onClose={() => setRaidResult(null)}
                 />
             )}
         </div>

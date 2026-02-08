@@ -16,6 +16,7 @@ import { Sidebar } from '@/components/game/Sidebar';
 import { TrainingQueue } from '@/components/game/TrainingQueue';
 import { UnitsDisplay } from '@/components/game/UnitsDisplay';
 import { CombatMovements } from '@/components/game/CombatMovements';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const BuildingPanel = dynamic(() => import('@/components/game/BuildingPanel').then(mod => mod.BuildingPanel), { ssr: false });
 const GlobalChat = dynamic(() => import('@/components/game/GlobalChat').then(mod => mod.GlobalChat), { ssr: false });
@@ -59,7 +60,18 @@ export function GameDashboard() {
 
     // Música y eventos
     const { musicVolume, sfxVolume, setMusicVolume, setSfxVolume } = useVolume();
-    useEvents(player?.id, syncWithServer);
+    const { unreadReports, unreadMessages, refreshNotifications } = useNotifications(player?.id);
+
+    const playNotificationSound = useCallback(() => {
+        const audio = new Audio('/assets/sounds/sfx/notification.mp3');
+        audio.volume = sfxVolume / 100;
+        audio.play().catch(e => console.warn("Audio play blocked", e));
+    }, [sfxVolume]);
+
+    useEvents(player?.id, syncWithServer, () => {
+        refreshNotifications();
+        playNotificationSound();
+    });
 
     // Actualizar recursos cada segundo
     useEffect(() => {
@@ -340,6 +352,8 @@ export function GameDashboard() {
                 onProfileClick={() => handleOpenProfile()}
                 onMarketClick={() => setShowMarketPanel(true)}
                 level={player.level || 1}
+                unreadReports={unreadReports}
+                unreadMessages={unreadMessages}
             />
 
             {showMarketPanel && (

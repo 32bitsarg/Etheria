@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 
-export const dynamic = 'force-dynamic';
-
-export async function GET(request: Request) {
+export async function POST(request: Request) {
     const headersList = await headers();
     const userId = headersList.get('x-user-id');
 
@@ -13,9 +11,11 @@ export async function GET(request: Request) {
     }
 
     try {
-        const { searchParams } = new URL(request.url || '', 'http://localhost');
-        const limit = parseInt(searchParams.get('limit') || '20');
-        const skip = parseInt(searchParams.get('skip') || '0');
+        const { reportId } = await request.json();
+
+        if (!reportId) {
+            return NextResponse.json({ error: 'Report ID required' }, { status: 400 });
+        }
 
         const player = await prisma.player.findUnique({
             where: { userId },
@@ -26,30 +26,21 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Player not found' }, { status: 404 });
         }
 
-        const reports = await prisma.combatReport.findMany({
+        // Marcar el informe específico como leído
+        await prisma.combatReport.update({
             where: {
+                id: reportId,
                 OR: [
                     { attackerId: player.id },
                     { defenderId: player.id }
                 ]
             },
-            orderBy: {
-                timestamp: 'desc'
-            },
-            skip,
-            take: limit + 1 // Pedimos uno más para saber si hay más páginas
+            data: { read: true }
         });
 
-        const hasMore = reports.length > limit;
-        const results = hasMore ? reports.slice(0, limit) : reports;
-
-        return NextResponse.json({
-            success: true,
-            reports: results,
-            hasMore
-        });
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error fetching reports:', error);
+        console.error('Error marking report as read:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

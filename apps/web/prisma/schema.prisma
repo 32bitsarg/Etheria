@@ -153,7 +153,7 @@ model CombatMovement {
 model CombatReport {
   id             String   @id @default(cuid())
   attackerId     String
-  defenderId     String
+  defenderId     String?
   originCityName String
   targetCityName String
   won            Boolean
@@ -161,10 +161,12 @@ model CombatReport {
   lootedWood     Float    @default(0)
   lootedIron     Float    @default(0)
   lootedGold     Float    @default(0)
+  lootedDoblones Float    @default(0)
+  lootedEther    Float    @default(0)
   timestamp      DateTime @default(now())
   read           Boolean  @default(false)
   attacker       Player   @relation("AttackerReports", fields: [attackerId], references: [id])
-  defender       Player   @relation("DefenderReports", fields: [defenderId], references: [id])
+  defender       Player?  @relation("DefenderReports", fields: [defenderId], references: [id])
 }
 
 model Message {
@@ -227,3 +229,40 @@ model MarketState {
   doblonesReserve Float   @default(50000000) // Reserva virtual de Doblones (Precio inicial ~500)
   lastUpdate     DateTime @default(now())
 }
+
+// === SISTEMA DE RAIDS NPC ===
+model NPCCamp {
+  id          String    @id @default(cuid())
+  type        String    // "BARBARIAN_T1", "BARBARIAN_T2", "RUIN_T3", etc.
+  tier        Int       @default(1)
+  x           Int       // Coordenada en el mapa
+  y           Int       // Coordenada en el mapa
+  units       Json      // { "barbarian_light": 10, "barbarian_archer": 5 }
+  treasureClassId String // ID de la TC para loot (ej: "tc_campamento_barbaro_t1")
+  lastAttack  DateTime? // Cuándo fue atacado por última vez
+  createdAt   DateTime  @default(now())
+  respawnAt   DateTime? // Si fue destruido, cuándo reaparecerá
+  isDestroyed Boolean   @default(false)
+
+  @@index([x, y])
+  @@index([tier])
+  @@index([isDestroyed])
+}
+
+// Movimientos de tropas hacia campamentos NPC
+model RaidMovement {
+  id           String   @id @default(cuid())
+  playerId     String   // ID del jugador atacante
+  originCityId String   // Ciudad de origen
+  targetCampId String   // ID del campamento NPC objetivo
+  units        Json     // [{ type: "infantry", count: 10 }]
+  startTime    DateTime @default(now())
+  endTime      DateTime // Hora de llegada
+  status       String   @default("TRAVELING") // TRAVELING, RESOLVED, RETURNING
+  createdAt    DateTime @default(now())
+
+  @@index([endTime])
+  @@index([playerId])
+  @@index([status])
+}
+
